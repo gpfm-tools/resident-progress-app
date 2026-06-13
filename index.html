@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>総合診療・家庭医療 進捗確認アプリ v1.0.0</title>
+  <style>
+    :root {
+      --bg:#f5f7fb; --card:#ffffff; --line:#d8dee9; --line-strong:#c8d1dc; --text:#1f2937; --muted:#6b7280;
+      --blue-soft:#eef6ff; --blue-verysoft:#f7fbff; --blue-strong:#1864c8;
+      --orange-soft:#fff2e8; --orange-verysoft:#fffaf6; --orange-strong:#d9480f;
+      --gray-soft:#eceff4; --gray-text:#5c6773; --na-bg:#ffffff; --na-text:#9aa6b2;
+      --yellow-soft:#fff7da; --yellow-strong:#b58105; --green-soft:#eefaf2; --green-strong:#198754;
+      --shadow:0 8px 24px rgba(15,23,42,.08); --radius:16px;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Yu Gothic",sans-serif; }
+    .page { max-width:940px; margin:0 auto; padding:12px 6px 88px; }
+    .title-row { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:8px; }
+    h1 { margin:0; font-size:1.4rem; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+    .card-head { padding:12px 14px 0; font-weight:700; font-size:.92rem; }
+    .card-body { padding:12px 14px 14px; }
+    .screen { display:none; }
+    .screen.active { display:block; }
+    .tag { display:inline-flex; align-items:center; gap:6px; padding:5px 8px; border-radius:999px; border:1px solid var(--line); font-size:.76rem; background:#fff; white-space:nowrap; }
+    .tag-help-gp { background:#f2f8ff; color:#1854a6; border-color:#d3e5ff; }
+    .top-minimal { display:grid; grid-template-columns:1fr auto; gap:10px; margin-bottom:8px; }
+    .top-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+    .field { border:1px solid var(--line); border-radius:10px; padding:6px 8px; background:#fbfcfe; min-height:58px; }
+    .field-label { font-size:.72rem; color:var(--muted); margin-bottom:2px; }
+    .field-value { font-weight:700; font-size:.86rem; line-height:1.2; }
+    .field-value select, .field-value input[type="date"] { width:100%; border:1px solid var(--line); border-radius:7px; padding:4px 5px; font-size:.82rem; background:#fff; }
+    .naika-checks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 8px; font-size:.73rem; font-weight:600; }
+    .naika-checks label { display:flex; align-items:center; gap:4px; }
+    .btn { appearance:none; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; }
+    .input-layout { display:grid; grid-template-columns:minmax(0,1.58fr) minmax(250px,.62fr); gap:8px; align-items:start; }
+    .table-wrap { overflow:auto; max-height:74vh; }
+    table { width:100%; min-width:520px; border-collapse:separate; border-spacing:0; }
+    th,td { border-bottom:1px solid var(--line); border-right:1px solid #eef2f7; vertical-align:top; padding:5px 4px; font-size:.75rem; background:#fff; }
+    th { position:sticky; top:0; z-index:10; background:#f7f9fd; font-size:.72rem; color:var(--muted); text-align:left; border-bottom:2px solid var(--line-strong); }
+    th:first-child,td:first-child { position:sticky; left:0; z-index:8; background:#f1f3f5; }
+    th:first-child { z-index:12; background:#f7f9fd; }
+    .category-cell { width:54px; min-width:54px; max-width:54px; background:#eef0f3 !important; border-right:2px solid var(--line-strong); }
+    .category-accent-josler { box-shadow: inset 4px 0 0 #1864c8; }
+    .category-accent-common { box-shadow: inset 4px 0 0 #6b7280; }
+    .category-accent-basis { box-shadow: inset 4px 0 0 #6f42c1; }
+    .category-accent-other { box-shadow: inset 4px 0 0 #94a3b8; }
+    .gp-col-head { background:#eaf4ff !important; color:#1864c8 !important; }
+    .fm-col-head { background:#fff3ec !important; color:#d9480f !important; }
+    .gp-cell { background:var(--blue-verysoft); width:72px; min-width:72px; }
+    .fm-cell { background:var(--orange-verysoft); width:72px; min-width:72px; }
+    .section-row td { background:#f8fafc !important; color:#475569; font-weight:800; font-size:.74rem; border-top:2px solid var(--line-strong); }
+    .row-title { display:flex; align-items:flex-start; justify-content:space-between; gap:6px; margin-bottom:3px; }
+    .row-title strong { font-size:.76rem; }
+    .cell-top { display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:2px; min-height:16px; }
+    .cell-mini { font-size:.6rem; color:var(--muted); line-height:1.05; }
+    .help-btn { border:1px solid var(--line); background:#fff; color:#334155; width:17px; height:17px; border-radius:999px; font-size:.62rem; font-weight:800; cursor:pointer; box-shadow:0 1px 2px rgba(15,23,42,.04); flex:0 0 auto; }
+    .status-chip { display:inline-flex; align-items:center; justify-content:center; min-width:62px; padding:3px 5px; border-radius:999px; font-weight:700; font-size:.58rem; border:1px solid transparent; box-shadow:0 2px 6px rgba(15,23,42,.05); cursor:pointer; }
+    .state-none { background:var(--gray-soft); color:var(--gray-text); border-color:#d9dee5; }
+    .state-na { background:var(--na-bg); color:var(--na-text); border-color:#d8dee9; }
+    .state-gp-soft { background:var(--blue-soft); color:#4f83b8; border-color:#d9eaff; }
+    .state-gp-strong { background:var(--blue-strong); color:#fff; border-color:var(--blue-strong); }
+    .state-fm-soft { background:var(--orange-soft); color:#c27a52; border-color:#fde1d0; }
+    .state-fm-strong { background:var(--orange-strong); color:#fff; border-color:var(--orange-strong); }
+    .state-mid { background:var(--yellow-soft); color:var(--yellow-strong); border-color:#f5dc8a; }
+    .state-done { background:var(--green-soft); color:var(--green-strong); border-color:#a9e4bf; }
+    .counter-box { border:1px solid var(--line); border-radius:8px; background:#fff; padding:3px; box-shadow:0 2px 6px rgba(15,23,42,.04); width:100%; }
+    .counter-numbers { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:3px; }
+    .mini-pill { border-radius:999px; padding:2px 5px; font-size:.6rem; font-weight:700; border:1px solid transparent; }
+    .counter-bar { display:grid; grid-template-columns:var(--done,1fr) var(--mid,1fr) var(--todo,1fr); height:5px; overflow:hidden; border-radius:999px; background:#edf1f7; margin-bottom:2px; width:calc(100% + 10px); margin-right:-10px; }
+    .ratio-bar { display:flex; height:10px; overflow:hidden; border-radius:999px; background:#edf1f7; margin-top:6px; }
+    .ratio-bar-done { background:#198754; }
+    .ratio-bar-remain { background:#cfd6df; }
+    .req-meta { display:inline-block; }
+    .counter-bar span:nth-child(1){background:#198754;} .counter-bar span:nth-child(2){background:#f1c453;} .counter-bar span:nth-child(3){background:#cfd6df;}
+    .counter-actions { display:flex; gap:2px; flex-wrap:wrap; width:100%; max-width:none; }
+    .counter-btn { border:1px solid var(--line); background:#fff; border-radius:6px; padding:1px 2px; font-size:.5rem; font-weight:700; color:#475569; box-shadow:0 1px 2px rgba(15,23,42,.04); cursor:pointer; touch-action:manipulation; }
+    .status-chip { touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+    .memo-links { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .memo-box { border:1px solid var(--line); border-radius:12px; background:#fbfcff; padding:8px; }
+    .memo-title { font-weight:700; margin-bottom:5px; font-size:.78rem; }
+    .link-list { display:grid; gap:5px; font-size:.68rem; color:#475569; }
+    .link-item { border:1px dashed var(--line); border-radius:10px; padding:6px 7px; background:#fff; }
+    .link-item a, #free-link-editor a { color:#1d4ed8; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
+    #free-link-editor, #free-memo-editor { overflow-wrap:anywhere; word-break:break-word; }
+    .desc-panel { border:1px solid var(--line); border-radius:14px; background:#fff; padding:10px; max-height:74vh; overflow:auto; position:sticky; top:12px; }
+    .desc-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px; }
+    .desc-head h4 { margin:0; font-size:.96rem; line-height:1.2; }
+    .desc-close-btn { border:1px solid var(--line); background:#fff; color:#475569; border-radius:10px; padding:4px 8px; font-size:.72rem; font-weight:700; cursor:pointer; }
+    .help-btn.active { outline:2px solid #93c5fd; background:#eff6ff; }
+    .desc-sub { color:var(--muted); font-size:.72rem; margin-top:0; }
+    .desc-box { border:1px solid var(--line); border-radius:12px; padding:9px; background:#fafcff; font-size:.9em; }
+    .desc-box ul { margin:0; padding-left:1.15em; }
+    .desc-box li { margin:.24em 0; line-height:1.48; }
+    .desc-box ul ul { list-style:none; padding-left:1em; margin-top:.2em; }
+    .desc-box ul ul li { position:relative; }
+    .desc-box ul ul li::before { content:'— '; position:absolute; left:-1em; color:var(--muted); }
+    .history-compact-cell { background:#fff; }
+    .history-block { display:flex; flex-direction:column; gap:2px; min-width:110px; }
+    .history-line { font-size:.68rem; line-height:1.35; white-space:normal; color:var(--text); }
+    .history-line.gp { color:var(--text); }
+    .history-line.fm { color:var(--text); }
+    .history-line.na { color:var(--na-text); }
+    .history-date-head { font-size:.8rem; font-weight:700; color:#667085; }
+    .history-item-cell { background:#f1f3f5 !important; min-width:138px; }
+    .history-item-wrap { display:flex; align-items:flex-start; justify-content:space-between; gap:6px; }
+    .history-item-name { line-height:1.35; }
+    .hl-pill { display:inline-flex; align-items:center; gap:2px; padding:1px 6px; border-radius:999px; font-size:.66rem; font-weight:800; line-height:1.2; border:1px solid transparent; }
+    .hl-done { background:var(--green-soft); color:var(--green-strong); border-color:#a9e4bf; }
+    .hl-mid { background:var(--yellow-soft); color:var(--yellow-strong); border-color:#f5dc8a; }
+    .hl-none { background:var(--gray-soft); color:var(--gray-text); border-color:#d9dee5; }
+    .hl-na { background:var(--na-bg); color:var(--na-text); border-color:#d8dee9; }
+    .hl-gp-soft { background:var(--blue-soft); color:#4f83b8; border-color:#d9eaff; }
+    .hl-gp-strong { background:var(--blue-strong); color:#fff; border-color:var(--blue-strong); }
+    .hl-fm-soft { background:var(--orange-soft); color:#c27a52; border-color:#fde1d0; }
+    .hl-fm-strong { background:var(--orange-strong); color:#fff; border-color:var(--orange-strong); }
+    .inline-metrics { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .summary-top-spacer { height:2px; margin-bottom:6px; }
+    .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); column-gap:14px; row-gap:6px; align-items:start; }
+    .summary-em { font-weight:600; color:var(--muted); }
+    .subtle-metric { font-size:.68rem; color:var(--muted); }
+    .subtle-metric.alert { color:var(--text); font-weight:800; }
+    .desc-placeholder { color:var(--muted); font-size:.82rem; line-height:1.5; }
+    .history-floating-panel { position:fixed; right:12px; bottom:86px; width:min(420px, calc(100vw - 24px)); max-height:58vh; overflow:auto; z-index:96; box-shadow:0 16px 40px rgba(15,23,42,.14); }
+    @media (max-width:1280px) {
+      .history-floating-panel { right:8px; left:8px; width:auto; bottom:86px; max-height:34vh; }
+    }
+    .bottom-nav { position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); border-top:1px solid var(--line); display:flex; justify-content:center; gap:12px; padding:10px 16px; z-index:100; }
+    .nav-btn { min-width:150px; border:1px solid var(--line); background:#fff; border-radius:14px; padding:9px 12px; font-weight:700; color:#475569; cursor:pointer; }
+    .nav-btn.active { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+    @media (max-width:1280px) {
+      .top-minimal,.memo-links,.input-layout { grid-template-columns:1fr; }
+      .top-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      #screen-input.active .side-panel-wrap { position:fixed; left:8px; right:8px; bottom:86px; z-index:95; }
+      #screen-input.active .side-panel-wrap .desc-panel { max-height:28vh; }
+      .page { padding-bottom:320px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="title-row">
+      <div>
+        <h1>総合診療・家庭医療 専攻医 進捗確認アプリ</h1>
+        <div style="margin-top:6px; font-size:.74rem; color:var(--muted); line-height:1.6;">
+          <div>v1.0.0 ｜ 公開日 2026-06-14 ｜ 最終更新日 2026-06-14</div>
+          <div>こちらは個人開発の非公式アプリです。制度更新のタイムラグやミスの可能性もあります。必ず公式情報を確認してください。</div>
+          <div><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMHqx18xFb6KatqZPTWbNUOii5TFWiM_OTG0bwy6B1DNc-ZQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline; text-underline-offset:2px;">感想・不具合報告・改善要望はこちらから</a></div>
+          <div><a href="https://note.com/tender_curlew476" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline; text-underline-offset:2px;">作成者のnote</a></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="screen-input" class="screen active">
+      <div class="top-minimal">
+        <div class="card">
+          <div class="card-head">設定 / プロフィール</div>
+          <div class="card-body">
+            <div class="top-grid">
+              <div class="field"><div class="field-label">振り返り日</div><div class="field-value"><input id="review-date" type="date" value="2026-03-24" /></div></div>
+              <div class="field"><div class="field-label">ローテーション</div><div class="field-value"><select id="rotation-select"><option>総診I</option><option>総診II</option><option selected>内科</option><option>小児科</option><option>救急科</option><option>家庭医療I</option><option>家庭医療II</option></select></div></div>
+              <div class="field"><div class="field-label">研修開始年度</div><div class="field-value"><select id="training-year"><option value="2025">2025年度以降</option><option value="2024">2024年度以前</option></select></div></div>
+              <div class="field"><div class="field-label">内科研修期間</div><div class="field-value"><div class="naika-checks"><label><input id="naika-4-9" type="checkbox">4〜9月</label><label><input id="naika-7-12" type="checkbox" checked>7〜12月</label><label><input id="naika-10-3" type="checkbox">10〜3月</label><label><input id="naika-8-2" type="checkbox">8〜2月</label><label><input id="naika-other" type="checkbox">その他</label></div></div></div>
+              <div class="field"><div class="field-label">Mini-CEX 年間必要数</div><div class="field-value">総診 <select id="req-minicex-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select> / 家庭医療 2</div></div>
+              <div class="field"><div class="field-label">360度評価 年間必要数</div><div class="field-value">総診 <select id="req-360-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select> / 家庭医療 2</div></div>
+              <div class="field"><div class="field-label">CbD 年間必要数</div><div class="field-value">総診 <select id="req-cbd-gp" style="display:inline-block; width:56px;"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> / 家庭医療 4</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+          <div id="save-status" class="tag tag-help-gp" style="font-size:.7rem;">未保存</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+            <button id="save-history-btn" class="btn">履歴に保存</button>
+            <button id="export-json-btn" class="btn">JSON書き出し</button>
+            <button id="import-json-btn" class="btn">JSON読込</button>
+            <input id="import-json-input" type="file" accept="application/json,.json" style="display:none;" />
+          </div>
+        </div>
+      </div>
+
+      <div class="input-layout">
+        <section class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>項目</th><th class="gp-col-head">総合診療</th><th class="fm-col-head">家庭医療</th></tr></thead>
+              <tbody>
+                <tr class="section-row"><td class="category-cell">J-OSLER / 研修評価</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>症例登録</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini"><span id="case-gp-meta">2025年度以降:20 ／ ■J-OSLER</span></div><button class="help-btn">?</button></div><div class="counter-box" data-counter="case_gp" data-total="20"></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>病歴要約</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini"><span id="summary-gp-meta">2025年度以降:5 ／ ■J-OSLER</span></div><button class="help-btn">?</button></div><div class="counter-box" data-counter="summary_gp" data-total="5"></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>技術技能評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">■J-OSLER</div><button class="help-btn">?</button></div><div style="display:flex; gap:4px; flex-wrap:wrap;"><div id="skill-gp-first-chip" class="status-chip state-none" data-half="first">上期 未着手</div><div id="skill-gp-second-chip" class="status-chip state-none" data-half="second">下期 未着手</div></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>研修評価：自己評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">■J-OSLER</div><button class="help-btn">?</button></div><div style="display:flex; gap:4px; flex-wrap:wrap;"><div id="self-gp-first-chip" class="status-chip state-none" data-half="first">上期 未着手</div><div id="self-gp-second-chip" class="status-chip state-none" data-half="second">下期 未着手</div></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>研修評価：指導医評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">■J-OSLER</div><button class="help-btn">?</button></div><div style="display:flex; gap:4px; flex-wrap:wrap;"><div id="supervisor-gp-first-chip" class="status-chip state-none" data-half="first">上期 未着手</div><div id="supervisor-gp-second-chip" class="status-chip state-none" data-half="second">下期 未着手</div></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>研修評価：プログラム評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">■J-OSLER</div><button class="help-btn">?</button></div><div id="program-gp-chip" class="status-chip state-none" data-mode="gp-simple">未着手</div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-josler"><div class="row-title"><strong>多職種評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">■J-OSLER</div><button class="help-btn">?</button></div><div style="display:flex; gap:4px; flex-wrap:wrap;"><div id="multi-gp-first-chip" class="status-chip state-none" data-half="first">上期 未着手</div><div id="multi-gp-second-chip" class="status-chip state-none" data-half="second">下期 未着手</div></div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr class="section-row"><td class="category-cell">共通項目</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>ポートフォリオ</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">目標7 ／ □J-GOAL</div><button class="help-btn">?</button></div><div class="counter-box" data-counter="portfolio_gp" data-total="7"></div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">目標16 ／ ○Fami-Log</div><button class="help-btn">?</button></div><div class="counter-box" data-counter="portfolio_fm" data-total="16"></div></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>研究</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">学会1 or 論文1 ／ □J-GOAL</div><button class="help-btn">?</button></div><select id="research-gp-route" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:2px 4px; font-size:.58rem; background:#fff; margin-bottom:3px;"><option selected>学会発表</option><option>論文</option></select><div id="research-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">学会2 or 論文1 or 著書1 ／ ○Fami-Log</div><button class="help-btn">?</button></div><select id="research-fm-route" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:2px 4px; font-size:.58rem; background:#fff; margin-bottom:3px;"><option selected>学会発表</option><option>論文</option><option>著書</option></select><div id="research-fm-chip" class="status-chip state-none" data-mode="fm-research">未</div></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>Off-JT</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div style="display:flex; gap:4px; flex-wrap:wrap;"><div id="offjt-gp-ethics-chip" class="status-chip state-none" data-mode="gp-simple">倫理 未</div><div id="offjt-gp-safety-chip" class="status-chip state-none" data-mode="gp-simple">安全 未</div><div id="offjt-gp-infection-chip" class="status-chip state-none" data-mode="gp-simple">感染 未</div></div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">○Fami-Log</div><button class="help-btn">?</button></div><div id="offjt-fm-chip" class="status-chip state-none" data-mode="fm-simple">未</div></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>学習の記録</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div id="learning-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>定期的な振り返り</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div id="regular-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">○Fami-Log</div><button class="help-btn">?</button></div><div id="regular-fm-chip" class="status-chip state-none" data-mode="fm-simple">未</div></td></tr>
+                <tr><td class="category-cell category-accent-common"><div class="row-title"><strong>1年毎の振り返り</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div id="annual-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">○Fami-Log</div><button class="help-btn">?</button></div><div id="annual-fm-chip" class="status-chip state-none" data-mode="fm-simple">未</div></td></tr>
+                <tr class="section-row"><td class="category-cell">業務基盤型評価</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>
+                <tr><td class="category-cell category-accent-basis"><div class="row-title"><strong>Mini-CEX</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini"><span id="minicex-gp-meta" class="req-meta">必要1</span> ／ □J-GOAL</div><button class="help-btn">?</button></div><div id="minicex-gp-chip" class="status-chip state-none" data-required-source="req-minicex-gp">未着手</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">必要2 ／ ○Fami-Log</div><button class="help-btn">?</button></div><div id="minicex-fm-chip" class="status-chip state-none" data-mode="fm-required-2">未着手</div></td></tr>
+                <tr><td class="category-cell category-accent-basis"><div class="row-title"><strong>360度評価</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini"><span id="eval360-gp-meta" class="req-meta">必要1</span> ／ ■J-OSLER</div><button class="help-btn">?</button></div><div id="eval360-gp-chip" class="status-chip state-none" data-required-source="req-360-gp">未着手</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">必要2 ／ ○Fami-Log</div><button class="help-btn">?</button></div><div id="eval360-fm-chip" class="status-chip state-none" data-mode="fm-required-2">未着手</div></td></tr>
+                <tr><td class="category-cell category-accent-basis"><div class="row-title"><strong>CbD</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini"><span id="cbd-gp-meta" class="req-meta">必要2</span> ／ □J-GOAL</div><button class="help-btn">?</button></div><div id="cbd-gp-chip" class="status-chip state-none" data-required-source="req-cbd-gp">未着手</div></td><td class="fm-cell"><div class="cell-top"><div class="cell-mini">必要4 ／ ○Fami-Log</div><button class="help-btn">?</button></div><div id="cbd-fm-chip" class="status-chip state-none" data-mode="fm-required-4">未着手</div></td></tr>
+                <tr class="section-row"><td class="category-cell">その他</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>
+                <tr><td class="category-cell category-accent-other"><div class="row-title"><strong>小児科研修</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div id="peds-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+                <tr><td class="category-cell category-accent-other"><div class="row-title"><strong>救急科研修</strong></div></td><td class="gp-cell"><div class="cell-top"><div class="cell-mini">□J-GOAL</div><button class="help-btn">?</button></div><div id="em-gp-chip" class="status-chip state-none" data-mode="gp-simple">未</div></td><td class="fm-cell"><div class="status-chip state-na">対象外</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-body">
+            <div class="memo-links">
+              <div class="memo-box"><div class="memo-title">自由メモ</div><div id="free-memo-editor" contenteditable="true" style="border:1px solid var(--line); border-radius:8px; min-height:72px; padding:8px; background:#fff; font-size:.74rem; line-height:1.5;">面談メモ、注意点、次回確認したいことをここに自由記載。</div></div>
+              <div class="memo-box"><div class="memo-title">リンク置き場</div><div class="link-list"><div class="link-item"><strong>総合診療専門医検討委員会</strong><br>・ <a href="https://jbgm.org/" target="_blank" rel="noopener noreferrer">総合診療専門医検討委員会</a><br>・ <a href="https://jbgm.org/menu/j-goal_j-osler/#sec_0147656271518012023" target="_blank" rel="noopener noreferrer">J-GOAL 制度</a> ／ <a href="https://jbgm.org/cate_qa/grs-j-goal/" target="_blank" rel="noopener noreferrer">Q&amp;A</a><br>・ <a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">J-OSLER 制度</a> ／ <a href="https://jbgm.org/cate_qa/j-osler/" target="_blank" rel="noopener noreferrer">Q&amp;A</a> ／ <a href="https://jbgm.org/cate_qa/program-specialty-training-04/" target="_blank" rel="noopener noreferrer">内科研修Q&amp;A</a><br>・ <a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_61858545271518012023" target="_blank" rel="noopener noreferrer">総合診療修了要件</a></div><div class="link-item"><strong>新・家庭医療専門医制度</strong><br>・ <a href="https://shin-kateiiryo.primary-care.or.jp/" target="_blank" rel="noopener noreferrer">新・家庭医療専門医制度</a><br>・ <a href="https://www.primary-care.or.jp/nintei_fp/case_sk.php" target="_blank" rel="noopener noreferrer">ポートフォリオについて</a><br>・ <a href="https://www.primary-care.or.jp/nintei_tr/evaluation.php" target="_blank" rel="noopener noreferrer">業務基盤型評価について</a><br>・ <a href="https://www.primary-care.or.jp/nintei_tr/q_and_a.php" target="_blank" rel="noopener noreferrer">Q&amp;A</a><br>・ <a href="https://www.primary-care.or.jp/nintei_fp/index2025_sk.php" target="_blank" rel="noopener noreferrer">修了要件</a></div></div></div>
+            </div>
+          </div>
+        </section>
+        <aside class="card side-panel-wrap">
+          <div class="card-body">
+            <div class="desc-panel">
+              <div class="desc-head"><h4 id="desc-title">説明パネル</h4><button id="desc-close-btn" class="desc-close-btn">閉じる</button></div>
+              <div id="desc-sub" class="desc-sub">入力画面の ? を押すと対応する説明だけを表示します。</div>
+              <div id="desc-content" class="desc-box"><div class="desc-placeholder">入力画面の <strong>?</strong> を押してください。</div></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="screen-overview" class="screen">
+      <div style="display:grid; grid-template-columns:1fr; gap:10px; align-items:start;">
+        <section class="card">
+          <div class="card-head">達成状況の要約</div>
+          <div class="card-body">
+            <div class="summary-top-spacer"></div>
+            <div class="summary-grid">
+              <div id="summary-case-gp" style="border:1px solid var(--line); border-radius:12px; background:var(--blue-verysoft); padding:8px; min-height:92px;"><strong>J-OSLER 症例登録</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+              <div id="summary-portfolio-gp" style="border:1px solid var(--line); border-radius:12px; background:var(--blue-verysoft); padding:8px; min-height:92px;"><strong>総合診療ポートフォリオ</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+              <div id="summary-overall-gp" style="border:1px solid var(--line); border-radius:12px; background:var(--blue-verysoft); padding:8px; min-height:92px;"><strong>総合診療 主要進捗</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+              <div id="summary-summary-gp" style="border:1px solid var(--line); border-radius:12px; background:var(--blue-verysoft); padding:8px; min-height:92px;"><strong>J-OSLER 病歴要約</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+              <div id="summary-portfolio-fm" style="border:1px solid var(--line); border-radius:12px; background:var(--orange-verysoft); padding:8px; min-height:92px;"><strong>家庭医療ポートフォリオ</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+              <div id="summary-overall-fm" style="border:1px solid var(--line); border-radius:12px; background:var(--orange-verysoft); padding:8px; min-height:92px;"><strong>家庭医療 主要進捗</strong><div class="desc-sub" style="margin-top:6px;">現在の入力内容を反映します。</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">履歴一覧</div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table id="history-table">
+                <thead>
+                  <tr>
+                    <th class="history-item-cell">項目</th>
+                    <th id="history-head-1" class="history-date-head">履歴3</th>
+                    <th id="history-head-2" class="history-date-head">履歴2</th>
+                    <th id="history-head-3" class="history-date-head">履歴1</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <tr><td class="history-item-cell">まだ履歴はありません</td><td>-</td><td>-</td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="card history-floating-panel" id="history-desc-card" style="display:none;">
+          <div class="card-head" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span id="history-desc-title">履歴一覧の説明</span><button id="history-desc-close" class="desc-close-btn">閉じる</button></div>
+          <div class="card-body">
+            <div id="history-desc-sub" class="desc-sub">履歴一覧の ? を押すと説明を表示します。</div>
+            <div id="history-desc-content" class="desc-box"><div class="desc-placeholder">履歴一覧の各項目の ? を押してください。</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">直近3件の履歴</div>
+          <div class="card-body">
+            <div id="recent-history-list" class="link-list">
+              <div class="link-item">まだ履歴はありません。「履歴に保存」を押すとここに追加されます。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-target="screen-input">入力</button>
+    <button class="nav-btn" data-target="screen-overview">履歴 / 集計</button>
+  </nav>
+
+  <script>
+    const buttons = document.querySelectorAll('.nav-btn');
+    const screens = document.querySelectorAll('.screen');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        screens.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    const panelKeyOrder = [
+      'case_gp','summary_gp','skill_gp','self_gp','supervisor_gp','program_gp','multi_gp',
+      'portfolio_gp','portfolio_fm','research_gp','research_fm','offjt_gp','offjt_fm','learning_gp','regular_gp','regular_fm','annual_gp','annual_fm',
+      'minicex_gp','minicex_fm','360_gp','360_fm','cbd_gp','cbd_fm','peds_gp','em_gp'
+    ];
+
+    const helpButtons = document.querySelectorAll('#screen-input .help-btn');
+    helpButtons.forEach((btn, index) => {
+      const key = panelKeyOrder[index];
+      if (key) btn.dataset.panelKey = key;
+    });
+
+    const helpData = {
+      case_gp: {
+        title: '症例登録',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 内科研修期間終了後も登録可能ですが、できる限り内科研修中の登録が推奨されています。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で登録します。</li>
+          <li><strong>補足</strong> 2025年度以降開始者は、内科研修が12か月から6か月に短縮されるとともに、40→20症例に緩和されました。</li>
+          <li><strong>補足</strong> 分野別の登録数に所定の制約はありませんが、可能な限り幅広い異なる分野からの症例登録が推奨されています。</li>
+          <li><strong>補足</strong> 総合診療研修では初期研修医の症例は使えません。ただしダブルボードなら総合診療研修でも初期研修医の症例が使えます。</li>
+          <li><a href="https://jbgm.org/cate_qa/j-osler-02/" target="_blank" rel="noopener noreferrer">症例登録Q&amp;A</a></li>
+        </ul>`
+      },
+      summary_gp: {
+        title: '病歴要約',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 内科研修期間終了後も登録可能ですが、できる限り内科研修中の登録が推奨されています。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で登録します。症例登録して内科指導医の承認が得られた症例のみ、症例登録→病歴要約に進めますので、早めの入力・承認をおすすめします。</li>
+          <li><strong>補足</strong> 2025年度以降開始者は、内科研修が12か月から6か月に短縮されるとともに、10→5症例に緩和されました。</li>
+          <li><a href="https://jbgm.org/cate_qa/j-osler-02/" target="_blank" rel="noopener noreferrer">症例登録Q&amp;A</a></li>
+        </ul>`
+      },
+      skill_gp: {
+        title: '技術技能評価',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 7-9月末、1-3月末に登録可能です。内科研修期間中しか登録できません。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で、まず専攻医が入力・申請します。その後、指導医が入力・承認します。</li>
+          <li><strong>補足</strong> 専攻医も指導医も、内科研修期間が終了するとシステム上で入力できなくなります。</li>
+          <li><a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">総合診療版J-OSLERについて</a></li>
+        </ul>`
+      },
+      self_gp: {
+        title: '研修評価：自己評価',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 7-9月末、1-3月末に登録可能です。内科研修期間中しか登録できません。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で、専攻医が自己評価し入力します。また指導医も専攻医を評価し入力します。</li>
+          <li><strong>補足</strong> 専攻医も指導医も、内科研修期間が終了するとシステム上で入力できなくなります。</li>
+          <li><a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">総合診療版J-OSLERについて</a></li>
+        </ul>`
+      },
+      supervisor_gp: {
+        title: '研修評価：指導医評価',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 7-9月末、1-3月末に登録可能です。内科研修期間中しか登録できません。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で、専攻医が指導医を評価し入力します。</li>
+          <li><strong>補足</strong> 内科研修期間が終了するとシステム上で入力できなくなります。</li>
+          <li><a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">総合診療版J-OSLERについて</a></li>
+        </ul>`
+      },
+      program_gp: {
+        title: '研修評価：プログラム評価',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 1-3月末のみ登録可能です。</li>
+          <li><strong>どうやって？</strong> J-OSLER上で、専攻医がプログラムを評価し入力します。</li>
+          <li><strong>補足</strong> おそらく「内科研修期間の年度の」1-3月末のみ入力可能です。</li>
+          <li><a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">総合診療版J-OSLERについて</a></li>
+        </ul>`
+      },
+      multi_gp: {
+        title: '研修評価：多職種評価',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>いつ？</strong> 7-9月末、1-3月末に登録可能です。内科研修期間中しか登録できません。</li>
+          <li><strong>どうやって？</strong> 多職種からの専攻医の評価を、指導医が入力します。</li>
+          <li><strong>補足</strong> 多職種評価は専攻医側からは表示されませんので、指導医へ入力をお願いする形になります。入力方法はリンク先の「総合診療版J-OSLER説明動画（指導医向け）」を参照してください。</li>
+          <li><strong>注意</strong> J-GOALの360度評価とは別物なので、別途実施が必要です。</li>
+          <li><a href="https://jbgm.org/menu/j-goal_j-osler/#sec_5147657271518012023" target="_blank" rel="noopener noreferrer">総合診療版J-OSLERについて</a></li>
+        </ul>`
+      },
+      portfolio_gp: {
+        title: 'ポートフォリオ（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> J-GOAL上のフォーマットに沿って7つの事例について作成・入力してください。詳細はJ-GOAL上の説明を参照してください。</li>
+        </ul>`
+      },
+      portfolio_fm: {
+        title: 'ポートフォリオ（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 詳細事例報告16例を作成します。詳細は学会研修ハンドブックやリンク先を参照してください。</li>
+          <li><a href="https://www.primary-care.or.jp/nintei_fp/case_sk.php" target="_blank" rel="noopener noreferrer">ポートフォリオについて</a></li>
+        </ul>`
+      },
+      research_gp: {
+        title: '研究（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 学会発表筆頭1回、または論文発表筆頭1回を行います。J-GOALにも詳細を入力してください。</li>
+          <li><strong>補足</strong> 学会発表の抄録の保存をおすすめします。</li>
+          <li><strong>補足</strong> リンク先の「専門研修終了認定時の提出物チェックリスト」より作成しています。要件は研修開始時期（2018〜2022年、2023年〜）により異なるため注意してください。以下は2023年以降開始者のものです。</li>
+          <li>
+            <ul>
+              <li><strong>学会発表筆頭1回</strong> 抄録集の表紙と専攻医の発表演題ページのコピーを提出します。ワークショップ、シンポジウム、活動報告やポートフォリオ発表会は学会発表として認めません。研究会などは不可ですが、単独または複数の総合診療専門研修プログラム等が主催・共催する研究発表会での量的・質的研究の口演・ポスターは認めます。</li>
+              <li><strong>論文発表筆頭1回</strong> 論文のコピー（PDF）またはアクセプトを証明するメールを提出します。原著論文、症例報告、総説のいずれでも可。査読の有無は問いませんが、筆頭著者かつ当該論文の指導を受けた上級医との共著であること、日本語の場合は医学中央雑誌掲載誌であることが必要です。書籍は論文発表として認めません。</li>
+            </ul>
+          </li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_61858545271518012023" target="_blank" rel="noopener noreferrer">修了要件</a></li>
+        </ul>`
+      },
+      research_fm: {
+        title: '研究（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 筆頭論文1編、著書1編、または学会発表2回を行います。Fami-Logにも詳細を入力してください。</li>
+          <li><strong>補足</strong> 研究活動の業績について、以下の①、②または③のいずれか1つを満たすことが条件です。</li>
+          <li>
+            <ul>
+              <li><strong>①論文</strong> 家庭医療に関連する領域の学術雑誌（商業誌を含む）に、筆頭著者として掲載（受理済みを含む）された原著、症例報告、総説・解説が1編以上。</li>
+              <li><strong>②著書</strong> 家庭医療に関連する単著、または筆頭著者での分担執筆を1編以上。</li>
+              <li><strong>③学会発表</strong> 学術集会において、筆頭演者として家庭医療に関連する内容の発表を2つ以上。ただし院内発表会等は除きます。学会発表の抄録の保存をおすすめします。</li>
+            </ul>
+          </li>
+        <li><a href="https://www.primary-care.or.jp/nintei/rule.php" target="_blank" rel="noopener noreferrer">新家庭医療専門医の認定に関する細則（リンク先PDF参照）</a></li>
+        </ul>`
+      },
+      offjt_gp: {
+        title: 'Off-JT（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 医療倫理、医療安全、感染対策について、専攻医共通講習の必修講習Aを各1回以上受講する必要があります。J-GOALにも記入欄があります。</li>
+          <li>各医療機関や医師会の年1回の講習会や、e-learning（1回3300円）で取得可能です。リンク先を参照してください。</li>
+          <li><strong>補足</strong> 最終的に受講証明書の提出が必要です。e-learningでの受講で、受講証明書が発行されない場合は、受講したことが分かる書類が必要になります。</li>
+          <li><a href="https://jmsb.or.jp/senmoni/#an10" target="_blank" rel="noopener noreferrer">共通講習会情報</a></li>
+          <li><a href="https://jmsb.or.jp/senmoni/#an11" target="_blank" rel="noopener noreferrer">共通講習 e-learning</a></li>
+        </ul>`
+      },
+      offjt_fm: {
+        title: 'Off-JT（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 臨床36単位、教育6単位、研究6単位、マネジメント6単位を受講します。</li>
+          <li><strong>補足</strong> 臨床36単位中には、災害3、ウィメンズヘルス3（産婦人科研修で代用可）、メンタルヘルス3（精神科・心療内科研修で代用可）を含む必要があります。</li>
+          <li><strong>単位取得方法</strong></li>
+          <li>
+            <ul>
+              <li>① e-learning（会員マイページ）</li>
+              <li>② 学術大会・秋セミ・冬セミ・ブロック別PF発表会</li>
+              <li>③ UpToDateの生涯教育（1トピック閲覧でCME credit 0.5 point → 臨床0.2単位に変換）</li>
+              <li>④ 医師会生涯学習制度（一部のみ）</li>
+              <li>⑤ BMJ Best Practice / Learning による自己学習 など</li>
+            </ul>
+          </li>
+          <li><strong>補足</strong> JPCAが管理している①②の取得単位合計は、JPCAマイページ → 各種単位情報で確認できます。</li>
+          <li><a href="https://www.primary-care.or.jp/nintei/index_tn.php" target="_blank" rel="noopener noreferrer">単位制度について</a></li>
+        </ul>`
+      },
+      learning_gp: {
+        title: '学習の記録',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> J-GOALに、日々学習した内容を記載していきます。</li>
+          <li><strong>補足</strong> 調べた限りでは、具体的な件数ノルマは確認できませんでした。個人またはプログラム内で検討してください。</li>
+        </ul>`
+      },
+      regular_gp: {
+        title: '定期的な振り返り（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> J-GOALに、1〜数か月に1回の指導医との定期的な振り返りを記載します。</li>
+        </ul>`
+      },
+      regular_fm: {
+        title: '定期的な振り返り（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> Fami-Logに、1〜数か月に1回の指導医との定期的な振り返りを記載します。</li>
+          <li><strong>補足</strong> 月1回以上が推奨されています。</li>
+        </ul>`
+      },
+      annual_gp: {
+        title: '1年毎の振り返り（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> J-GOALに、1年ごと振り返りを指導医とともに行い、記載します。</li>
+        </ul>`
+      },
+      annual_fm: {
+        title: '1年毎の振り返り（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> Fami-Logに、1年ごと振り返りを指導医とともに行い、記載します。</li>
+        </ul>`
+      },
+      minicex_gp: {
+        title: 'Mini-CEX（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> プログラムによります。</li>
+          <li><strong>どうやって？</strong> J-GOALの「業務基盤型評価」でURLを発行し、URL経由で入力します。専攻医・登録された指導医どちらでも発行できます。</li>
+          <li><strong>補足</strong> 2019年までの研修手帳では「総合診療専門研修ⅠおよびⅡの研修中はそれぞれ3か月に1回を推奨」との記載がありました。ただそれ以降、明確な件数ノルマは確認できませんでした。回数はプログラム内で検討してください。</li>
+          <li><strong>補足</strong> 下記リンクのフォーマットはあくまで例であり、家庭医療のフォーマットを使っても問題ありません。</li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_41858545271518012023" target="_blank" rel="noopener noreferrer">研修評価に関連する書式</a></li>
+        </ul>`
+      },
+      minicex_fm: {
+        title: 'Mini-CEX（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> 6か月に1回です。</li>
+          <li><strong>どうやって？</strong> リンク先のフォーマットに沿って実施します。結果をFami-Logに記載してください。</li>
+          <li><a href="https://www.primary-care.or.jp/nintei_tr/evaluation.php" target="_blank" rel="noopener noreferrer">業務基盤型評価について</a></li>
+        </ul>`
+      },
+      '360_gp': {
+        title: '360度評価（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> プログラムによります。</li>
+          <li><strong>どうやって？</strong> J-GOALの「業務基盤型評価」でURLを発行し、URL経由で入力します。専攻医・登録された指導医どちらでも発行できます。</li>
+          <li><strong>補足</strong> 総合診療プログラム整備基準では、各ローテーション終了時など適宜実施／3か月に1回が望ましいとの文言があります。ただそれ以降、明確な件数ノルマは確認できませんでした。回数はプログラム内で検討してください。</li>
+          <li><strong>補足</strong> 下記リンクのフォーマットはあくまで例であり、家庭医療のフォーマットを使っても問題ありません。</li>
+          <li><strong>注意</strong> J-OSLERの「研修評価：多職種評価」とは別物なので、別途実施が必要です。</li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_41858545271518012023" target="_blank" rel="noopener noreferrer">研修評価に関連する書式</a></li>
+        </ul>`
+      },
+      '360_fm': {
+        title: '360度評価（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> 6か月に1回です。</li>
+          <li><strong>どうやって？</strong> リンク先のフォーマットに沿って実施します。結果をFami-Logに記載してください。</li>
+          <li><a href="https://www.primary-care.or.jp/nintei_tr/evaluation.php" target="_blank" rel="noopener noreferrer">業務基盤型評価について</a></li>
+        </ul>`
+      },
+      cbd_gp: {
+        title: 'CbD（総診）',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> プログラムによります。</li>
+          <li><strong>どうやって？</strong> J-GOALの「業務基盤型評価」でURLを発行し、URL経由で入力します。専攻医・登録された指導医どちらでも発行できます。</li>
+          <li><strong>補足</strong> 総合診療プログラム整備基準では、各ローテーション終了時など適宜実施／3か月に1回が望ましいとの文言があります。ただそれ以降、明確な件数ノルマは確認できませんでした。回数はプログラム内で検討してください。</li>
+          <li><strong>補足</strong> 下記リンクのフォーマットはあくまで例であり、家庭医療のフォーマットを使っても問題ありません。</li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_41858545271518012023" target="_blank" rel="noopener noreferrer">研修評価に関連する書式</a></li>
+        </ul>`
+      },
+      cbd_fm: {
+        title: 'CbD（家庭医療）',
+        sub: '家庭医療セルの説明です。',
+        html: `<ul>
+          <li><strong>頻度は？</strong> 3か月に1回です。</li>
+          <li><strong>どうやって？</strong> リンク先のフォーマットに沿って実施します。カンファレンス時でも可。結果をFami-Logに記載してください。</li>
+          <li><a href="https://www.primary-care.or.jp/nintei_tr/evaluation.php" target="_blank" rel="noopener noreferrer">業務基盤型評価について</a></li>
+        </ul>`
+      },
+      peds_gp: {
+        title: '小児科研修',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 小児科研修中に、定期的にJ-GOALを開き、下記のカテゴリーに経験項目を登録してください。</li>
+          <li>
+            <ul>
+              <li>「Ⅷ小児科研修：一般目標と診療能力目標」</li>
+              <li>「Ⅳ小児科研修：手技、症候・疾患」</li>
+              <li>「Ⅹ小児科研修：疾患」</li>
+            </ul>
+          </li>
+          <li><strong>研修修了基準</strong> それぞれのカテゴリーで約8割のAまたはB評価を得ること。小児救急経験が足りない場合は、PALS、PEARS、ICLS小児コース等で補完可能です。</li>
+          <li><strong>注意</strong> 専攻医の自己評価ではなく、指導医評価です。詳細は修了要件を参照してください。</li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_61858545271518012023" target="_blank" rel="noopener noreferrer">修了要件</a></li>
+          <li><a href="https://www.primary-care.or.jp/nintei_tr/consult.php" target="_blank" rel="noopener noreferrer">領域別研修リーフレット（JPCA）</a></li>
+        </ul>`
+      },
+      em_gp: {
+        title: '救急科研修',
+        sub: '総合診療セルの説明です。',
+        html: `<ul>
+          <li><strong>どうやって？</strong> 救急科研修中に、定期的にJ-GOALを開き、経験項目を登録していってください。</li>
+          <li><strong>修了要件</strong> 下記が達成していることを自己評価で確認します。詳細は修了要件を参照してください。</li>
+          <li>
+            <ul>
+              <li><strong>A. 症候</strong> 達成状況 必須3例、選択10例以上。</li>
+              <li><strong>B. 病態</strong> 達成状況4例以上、その他5例以上。</li>
+              <li><strong>C. 手技</strong> 達成状況4例以上、その他5例以上。</li>
+            </ul>
+          </li>
+          <li><a href="https://jbgm.org/menu/%e7%a0%94%e4%bf%ae%e3%81%ae%e6%b5%81%e3%82%8c-2/#sec_61858545271518012023" target="_blank" rel="noopener noreferrer">修了要件</a></li>
+          <li><a href="https://www.primary-care.or.jp/nintei_tr/consult.php" target="_blank" rel="noopener noreferrer">領域別研修リーフレット（JPCA）</a></li>
+        </ul>`
+      }
+    };
+
+    const descTitle = document.getElementById('desc-title');
+    const descSub = document.getElementById('desc-sub');
+    const descContent = document.getElementById('desc-content');
+    const descCloseBtn = document.getElementById('desc-close-btn');
+
+    function resetInputPanel() {
+      helpButtons.forEach(b => b.classList.remove('active'));
+      descTitle.textContent = '説明パネル';
+      descSub.textContent = '入力画面の ? を押すと対応する説明だけを表示します。';
+      descContent.innerHTML = '<div class="desc-placeholder">入力画面の <strong>?</strong> を押してください。</div>';
+    }
+
+    function showInputPanelByKey(key, clickedBtn) {
+      helpButtons.forEach(b => b.classList.remove('active'));
+      if (clickedBtn) clickedBtn.classList.add('active');
+      const data = helpData[key];
+      if (!data) return;
+      descTitle.textContent = data.title;
+      descSub.textContent = data.sub;
+      descContent.innerHTML = data.html;
+    }
+
+    helpButtons.forEach(btn => {
+      btn.addEventListener('click', () => showInputPanelByKey(btn.dataset.panelKey, btn));
+    });
+
+    if (descCloseBtn) {
+      descCloseBtn.addEventListener('click', resetInputPanel);
+    }
+
+    function setChipClass(chip, state) {
+      chip.classList.remove('state-none','state-gp-soft','state-gp-strong','state-fm-soft','state-fm-strong','state-mid','state-done','state-na');
+      chip.classList.add(state);
+    }
+
+    function applySimpleChip(chip, idx, labels, states) {
+      chip.dataset.idx = String(idx);
+      chip.textContent = labels[idx] || labels[0];
+      setChipClass(chip, states[idx] || states[0]);
+    }
+
+    function bindSimpleChip(id, labels, states) {
+      const chip = document.getElementById(id);
+      if (!chip) return;
+      applySimpleChip(chip, Number(chip.dataset.idx || 0), labels, states);
+      chip.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        const next = (Number(chip.dataset.idx || 0) + 1) % labels.length;
+        applySimpleChip(chip, next, labels, states);
+      });
+    }
+
+    function applyRequiredChip(chip, required, fmMode) {
+      const req = Number(required || 0);
+      const idx = Math.min(Number(chip.dataset.idx || 0), req);
+      chip.dataset.idx = String(idx);
+      if (req === 0) {
+        chip.textContent = '対象外';
+        setChipClass(chip, 'state-na');
+        return;
+      }
+      if (idx <= 0) {
+        chip.textContent = '未着手';
+        setChipClass(chip, 'state-none');
+        return;
+      }
+      chip.textContent = `${idx}/${req} 完了`;
+      setChipClass(chip, idx < req ? (fmMode ? 'state-fm-soft' : 'state-gp-soft') : (fmMode ? 'state-fm-strong' : 'state-gp-strong'));
+    }
+
+    function bindRequiredChip(id, selectId, fmMode) {
+      const chip = document.getElementById(id);
+      const select = selectId ? document.getElementById(selectId) : null;
+      if (!chip) return;
+      function currentReq() {
+        return select ? Number(select.value || 0) : Number(chip.dataset.required || 0);
+      }
+      function refreshMeta(req) {
+        const map = {
+          'minicex-gp-chip': 'minicex-gp-meta',
+          'eval360-gp-chip': 'eval360-gp-meta',
+          'cbd-gp-chip': 'cbd-gp-meta'
+        };
+        const meta = document.getElementById(map[id]);
+        if (meta) meta.textContent = `必要${req}`;
+      }
+      function refresh() {
+        const req = currentReq();
+        refreshMeta(req);
+        applyRequiredChip(chip, req, fmMode);
+      }
+      refresh();
+      chip.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        const req = currentReq();
+        const next = req === 0 ? 0 : ((Number(chip.dataset.idx || 0) + 1) % (req + 1));
+        chip.dataset.idx = String(next);
+        refresh();
+      });
+      if (select) {
+        select.addEventListener('change', refresh);
+      }
+    }
+
+    function renderCounterBox(el) {
+      const done = Number(el.dataset.done || 0);
+      const mid = Number(el.dataset.mid || 0);
+      const todo = Number(el.dataset.todo || 0);
+      const total = Number(el.dataset.total || (done + mid + todo));
+      el.innerHTML = `<div class="counter-numbers"><span class="mini-pill state-done">済 ${done}</span><span class="mini-pill state-mid">途中 ${mid}</span><span class="mini-pill state-none">未 ${todo}</span><span class="mini-pill state-na">全 ${total}</span></div><div class="counter-bar" style="--done:${done}fr; --mid:${mid}fr; --todo:${todo}fr"><span></span><span></span><span></span></div><div class="counter-actions"><button class="counter-btn" data-action="done">+済</button><button class="counter-btn" data-action="mid">+途中</button><button class="counter-btn" data-action="todo">+未</button></div>`;
+      el.querySelectorAll('.counter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          let d = Number(el.dataset.done || 0);
+          let m = Number(el.dataset.mid || 0);
+          let t = Number(el.dataset.todo || 0);
+          const action = btn.dataset.action;
+          if (action === 'done') {
+            if (t > 0) { t -= 1; d += 1; }
+            else if (m > 0) { m -= 1; d += 1; }
+          } else if (action === 'mid') {
+            if (t > 0) { t -= 1; m += 1; }
+            else if (d > 0) { d -= 1; m += 1; }
+          } else {
+            if (m > 0) { m -= 1; t += 1; }
+            else if (d > 0) { d -= 1; t += 1; }
+          }
+          el.dataset.done = String(d);
+          el.dataset.mid = String(m);
+          el.dataset.todo = String(t);
+          renderCounterBox(el);
+        });
+      });
+    }
+
+    const counterDefaults = {
+      case_gp: { total:20, done:0, mid:0, todo:20 },
+      summary_gp: { total:5, done:0, mid:0, todo:5 },
+      portfolio_gp: { total:7, done:0, mid:0, todo:7 },
+      portfolio_fm: { total:16, done:0, mid:0, todo:16 }
+    };
+
+    document.querySelectorAll('[data-counter]').forEach(el => {
+      const key = el.dataset.counter;
+      const cfg = counterDefaults[key];
+      if (!cfg) return;
+      el.dataset.total = String(cfg.total);
+      el.dataset.done = String(cfg.done);
+      el.dataset.mid = String(cfg.mid);
+      el.dataset.todo = String(cfg.todo);
+      renderCounterBox(el);
+    });
+
+    function bindResearchGpChip() {
+      const chip = document.getElementById('research-gp-chip');
+      const route = document.getElementById('research-gp-route');
+      if (!chip || !route) return;
+      function refresh() {
+        const labels = ['未','実施中','実施済'];
+        const states = ['state-none','state-gp-soft','state-gp-strong'];
+        const idx = Math.min(Number(chip.dataset.idx || 0), 2);
+        chip.dataset.idx = String(idx);
+        chip.textContent = labels[idx];
+        setChipClass(chip, states[idx]);
+        chip.onpointerup = (e) => {
+          e.preventDefault();
+          const next = (Number(chip.dataset.idx || 0) + 1) % labels.length;
+          chip.dataset.idx = String(next);
+          chip.textContent = labels[next];
+          setChipClass(chip, states[next]);
+        };
+      }
+      route.addEventListener('change', refresh);
+      refresh();
+    }
+    bindResearchGpChip();
+    function bindResearchFmChip() {
+      const chip = document.getElementById('research-fm-chip');
+      const route = document.getElementById('research-fm-route');
+      if (!chip || !route) return;
+      function refresh() {
+        const labels = route.value === '学会発表' ? ['未','実施中','1/2済','2/2済'] : ['未','実施中','実施済'];
+        const states = route.value === '学会発表' ? ['state-none','state-fm-soft','state-fm-soft','state-fm-strong'] : ['state-none','state-fm-soft','state-fm-strong'];
+        const max = labels.length - 1;
+        const idx = Math.min(Number(chip.dataset.idx || 0), max);
+        chip.dataset.idx = String(idx);
+        chip.textContent = labels[idx] || labels[0];
+        setChipClass(chip, states[idx] || states[0]);
+        chip.onclick = () => {
+          const next = (Number(chip.dataset.idx || 0) + 1) % labels.length;
+          chip.dataset.idx = String(next);
+          chip.textContent = labels[next] || labels[0];
+          setChipClass(chip, states[next] || states[0]);
+        };
+      }
+      route.addEventListener('change', refresh);
+      refresh();
+    }
+    bindResearchFmChip();
+    function periodState() {
+      const m49 = document.getElementById('naika-4-9')?.checked;
+      const m712 = document.getElementById('naika-7-12')?.checked;
+      const m103 = document.getElementById('naika-10-3')?.checked;
+      const m82 = document.getElementById('naika-8-2')?.checked;
+      const other = document.getElementById('naika-other')?.checked;
+      return {
+        first: Boolean(m49 || m712 || m82 || other),
+        second: Boolean(m103 || m712 || m82 || other)
+      };
+    }
+
+    function applyHalfChip(chip, idx, labels, states, prefix, enabled) {
+      chip.dataset.idx = String(idx);
+      if (!enabled) {
+        chip.textContent = `${prefix} 対象外`;
+        setChipClass(chip, 'state-na');
+        return;
+      }
+      chip.textContent = `${prefix} ${labels[idx] || labels[0]}`;
+      setChipClass(chip, states[idx] || states[0]);
+    }
+
+    function bindHalfChip(id, prefix, labels, states, halfName) {
+      const chip = document.getElementById(id);
+      if (!chip) return;
+      function refresh() {
+        const periods = periodState();
+        const enabled = halfName === 'first' ? periods.first : periods.second;
+        const idx = enabled ? Number(chip.dataset.idx || 0) : 0;
+        applyHalfChip(chip, idx, labels, states, prefix, enabled);
+      }
+      chip.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        const periods = periodState();
+        const enabled = halfName === 'first' ? periods.first : periods.second;
+        if (!enabled) return;
+        const next = (Number(chip.dataset.idx || 0) + 1) % labels.length;
+        chip.dataset.idx = String(next);
+        refresh();
+      });
+      document.querySelectorAll('#naika-4-9,#naika-7-12,#naika-10-3,#naika-8-2,#naika-other').forEach(cb => cb.addEventListener('change', refresh));
+      refresh();
+    }
+
+    bindHalfChip('skill-gp-first-chip', '上期', ['未着手','入力済','承認済'], ['state-none','state-gp-soft','state-gp-strong'], 'first');
+    bindHalfChip('skill-gp-second-chip', '下期', ['未着手','入力済','承認済'], ['state-none','state-gp-soft','state-gp-strong'], 'second');
+    bindHalfChip('self-gp-first-chip', '上期', ['未着手','入力中','入力済'], ['state-none','state-gp-soft','state-gp-strong'], 'first');
+    bindHalfChip('self-gp-second-chip', '下期', ['未着手','入力中','入力済'], ['state-none','state-gp-soft','state-gp-strong'], 'second');
+    bindHalfChip('supervisor-gp-first-chip', '上期', ['未着手','入力中','入力済'], ['state-none','state-gp-soft','state-gp-strong'], 'first');
+    bindHalfChip('supervisor-gp-second-chip', '下期', ['未着手','入力中','入力済'], ['state-none','state-gp-soft','state-gp-strong'], 'second');
+    bindHalfChip('multi-gp-first-chip', '上期', ['未着手','依頼済','実施済'], ['state-none','state-gp-soft','state-gp-strong'], 'first');
+    bindHalfChip('multi-gp-second-chip', '下期', ['未着手','依頼済','実施済'], ['state-none','state-gp-soft','state-gp-strong'], 'second');
+
+    bindSimpleChip('program-gp-chip', ['未着手','入力中','入力済'], ['state-none','state-gp-soft','state-gp-strong']);
+
+    function bindPrefixedSimpleChip(id, prefix, labels, states) {
+      const chip = document.getElementById(id);
+      if (!chip) return;
+      function refresh(idx) {
+        chip.dataset.idx = String(idx);
+        chip.textContent = `${prefix} ${labels[idx] || labels[0]}`;
+        setChipClass(chip, states[idx] || states[0]);
+      }
+      refresh(Number(chip.dataset.idx || 0));
+      chip.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        const next = (Number(chip.dataset.idx || 0) + 1) % labels.length;
+        refresh(next);
+      });
+    }
+
+    bindPrefixedSimpleChip('offjt-gp-ethics-chip', '倫理', ['未','実施中','実施済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindPrefixedSimpleChip('offjt-gp-safety-chip', '安全', ['未','実施中','実施済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindPrefixedSimpleChip('offjt-gp-infection-chip', '感染', ['未','実施中','実施済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindSimpleChip('offjt-fm-chip', ['未','実施中','実施済'], ['state-none','state-fm-soft','state-fm-strong']);
+    bindSimpleChip('learning-gp-chip', ['未','記載中','記載済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindSimpleChip('regular-gp-chip', ['未','記載中','記載済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindSimpleChip('regular-fm-chip', ['未','記載中','記載済'], ['state-none','state-fm-soft','state-fm-strong']);
+    bindSimpleChip('annual-gp-chip', ['未','記載中','記載済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindSimpleChip('annual-fm-chip', ['未','記載中','記載済'], ['state-none','state-fm-soft','state-fm-strong']);
+    bindSimpleChip('peds-gp-chip', ['未','記載中','記載済'], ['state-none','state-gp-soft','state-gp-strong']);
+    bindSimpleChip('em-gp-chip', ['未','記載中','記載済'], ['state-none','state-gp-soft','state-gp-strong']);
+
+    document.getElementById('minicex-fm-chip').dataset.required = '2';
+    document.getElementById('eval360-fm-chip').dataset.required = '2';
+    document.getElementById('cbd-fm-chip').dataset.required = '4';
+    bindRequiredChip('minicex-gp-chip', 'req-minicex-gp', false);
+    bindRequiredChip('eval360-gp-chip', 'req-360-gp', false);
+    bindRequiredChip('cbd-gp-chip', 'req-cbd-gp', false);
+    bindRequiredChip('minicex-fm-chip', null, true);
+    bindRequiredChip('eval360-fm-chip', null, true);
+    bindRequiredChip('cbd-fm-chip', null, true);
+
+    const trainingYearSelect = document.getElementById('training-year');
+    function normalizeCounterToTotal(box, total) {
+      if (!box) return;
+      let done = Number(box.dataset.done || 0);
+      let mid = Number(box.dataset.mid || 0);
+      done = Math.max(0, Math.min(done, total));
+      mid = Math.max(0, Math.min(mid, total - done));
+      const todo = Math.max(0, total - done - mid);
+      box.dataset.total = String(total);
+      box.dataset.done = String(done);
+      box.dataset.mid = String(mid);
+      box.dataset.todo = String(todo);
+      renderCounterBox(box);
+    }
+
+    function applyTrainingYear() {
+      const year = trainingYearSelect ? trainingYearSelect.value : '2025';
+      const caseTotal = year === '2024' ? 40 : 20;
+      const summaryTotal = year === '2024' ? 10 : 5;
+      const caseMeta = document.getElementById('case-gp-meta');
+      const summaryMeta = document.getElementById('summary-gp-meta');
+      if (caseMeta) caseMeta.textContent = `${year === '2024' ? '2024年度以前:40' : '2025年度以降:20'} ／ ■J-OSLER`;
+      if (summaryMeta) summaryMeta.textContent = `${year === '2024' ? '2024年度以前:10' : '2025年度以降:5'} ／ ■J-OSLER`;
+      const caseBox = document.querySelector('[data-counter="case_gp"]');
+      const summaryBox = document.querySelector('[data-counter="summary_gp"]');
+      normalizeCounterToTotal(caseBox, caseTotal);
+      normalizeCounterToTotal(summaryBox, summaryTotal);
+    }
+    if (trainingYearSelect) {
+      trainingYearSelect.addEventListener('change', applyTrainingYear);
+      applyTrainingYear();
+    }
+
+    const STORAGE_KEY = 'residentProgress.v1.0.0';
+    const STORAGE_SAVED_AT_KEY = 'residentProgressSavedAt.v1.0.0';
+    const HISTORY_KEY = 'residentProgressHistory.v1.0.0';
+
+    function setSaveStatus(text) {
+      const el = document.getElementById('save-status');
+      if (el) el.textContent = text;
+    }
+
+    function formatSavedAtLabel(savedAt) {
+      if (!savedAt) return '未保存';
+      const d = new Date(savedAt);
+      if (Number.isNaN(d.getTime())) return '保存済';
+      const pad = (n) => String(n).padStart(2, '0');
+      return `最終保存 ${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function collectStateFromUI() {
+      const state = {
+        meta: { savedAt: new Date().toISOString() },
+        settings: {
+          reviewDate: document.getElementById('review-date')?.value || '',
+          rotation: document.getElementById('rotation-select')?.value || '',
+          trainingYear: document.getElementById('training-year')?.value || '2025',
+          reqMinicexGp: document.getElementById('req-minicex-gp')?.value || '1',
+          req360Gp: document.getElementById('req-360-gp')?.value || '1',
+          reqCbdGp: document.getElementById('req-cbd-gp')?.value || '2',
+          naika49: Boolean(document.getElementById('naika-4-9')?.checked),
+          naika712: Boolean(document.getElementById('naika-7-12')?.checked),
+          naika103: Boolean(document.getElementById('naika-10-3')?.checked),
+          naika82: Boolean(document.getElementById('naika-8-2')?.checked),
+          naikaOther: Boolean(document.getElementById('naika-other')?.checked),
+          researchGpRoute: document.getElementById('research-gp-route')?.value || '学会発表',
+          researchFmRoute: document.getElementById('research-fm-route')?.value || '学会発表'
+        },
+        counters: {},
+        chips: {},
+        memo: {
+          freeMemo: document.getElementById('free-memo-editor')?.innerHTML || ''
+        }
+      };
+
+      document.querySelectorAll('[data-counter]').forEach(el => {
+        state.counters[el.dataset.counter] = {
+          total: Number(el.dataset.total || 0),
+          done: Number(el.dataset.done || 0),
+          mid: Number(el.dataset.mid || 0),
+          todo: Number(el.dataset.todo || 0)
+        };
+      });
+
+      document.querySelectorAll('.status-chip[id]').forEach(el => {
+        state.chips[el.id] = Number(el.dataset.idx || 0);
+      });
+
+      return state;
+    }
+
+    function refreshAllFromState() {
+      document.querySelectorAll('[data-counter]').forEach(el => renderCounterBox(el));
+      applyTrainingYear();
+      document.querySelectorAll('#naika-4-9,#naika-7-12,#naika-10-3,#naika-8-2,#naika-other').forEach(cb => {
+        cb.dispatchEvent(new Event('change'));
+      });
+      ['req-minicex-gp','req-360-gp','req-cbd-gp','research-gp-route','research-fm-route'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.dispatchEvent(new Event('change'));
+      });
+      ['program-gp-chip','offjt-fm-chip','learning-gp-chip','regular-gp-chip','regular-fm-chip','annual-gp-chip','annual-fm-chip','peds-gp-chip','em-gp-chip','offjt-gp-ethics-chip','offjt-gp-safety-chip','offjt-gp-infection-chip'].forEach(id => {
+        const chip = document.getElementById(id);
+        if (chip) {
+          const idx = Number(chip.dataset.idx || 0);
+          chip.dataset.idx = String(idx);
+          chip.click();
+          chip.dataset.idx = String(idx);
+        }
+      });
+      resetInputPanel();
+    }
+
+    function applyStateToUI(state) {
+      const s = state?.settings || {};
+      const counters = state?.counters || {};
+      const chips = state?.chips || {};
+      const memo = state?.memo || {};
+
+      const setValue = (id, value) => { const el = document.getElementById(id); if (el && value !== undefined) el.value = value; };
+      const setChecked = (id, value) => { const el = document.getElementById(id); if (el) el.checked = Boolean(value); };
+
+      setValue('review-date', s.reviewDate || '');
+      setValue('rotation-select', s.rotation || '');
+      setValue('training-year', s.trainingYear || '2025');
+      setValue('req-minicex-gp', s.reqMinicexGp || '1');
+      setValue('req-360-gp', s.req360Gp || '1');
+      setValue('req-cbd-gp', s.reqCbdGp || '2');
+      setChecked('naika-4-9', s.naika49);
+      setChecked('naika-7-12', s.naika712);
+      setChecked('naika-10-3', s.naika103);
+      setChecked('naika-8-2', s.naika82);
+      setChecked('naika-other', s.naikaOther);
+      setValue('research-gp-route', s.researchGpRoute || '学会発表');
+      setValue('research-fm-route', s.researchFmRoute || '学会発表');
+
+      Object.entries(counters).forEach(([key, value]) => {
+        const el = document.querySelector(`[data-counter="${key}"]`);
+        if (!el) return;
+        el.dataset.total = String(value.total ?? 0);
+        el.dataset.done = String(value.done ?? 0);
+        el.dataset.mid = String(value.mid ?? 0);
+        el.dataset.todo = String(value.todo ?? 0);
+      });
+
+      Object.entries(chips).forEach(([id, idx]) => {
+        const el = document.getElementById(id);
+        if (el) el.dataset.idx = String(idx ?? 0);
+      });
+
+      const memoEl = document.getElementById('free-memo-editor');
+      if (memoEl) memoEl.innerHTML = memo.freeMemo || '';
+
+      refreshAllFromState();
+    }
+
+    function saveStateToLocalStorage() {
+      try {
+        const state = collectStateFromUI();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        localStorage.setItem(STORAGE_SAVED_AT_KEY, state.meta.savedAt);
+        setSaveStatus(formatSavedAtLabel(state.meta.savedAt));
+        renderOverviewSummary(state);
+      } catch (error) {
+        console.error('保存失敗', error);
+        setSaveStatus('保存失敗');
+      }
+    }
+
+    function loadStateFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const savedAt = localStorage.getItem(STORAGE_SAVED_AT_KEY);
+          setSaveStatus(formatSavedAtLabel(savedAt));
+          renderOverviewSummary(collectStateFromUI());
+          renderRecentHistoryList();
+          renderHistoryTable();
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        applyStateToUI(parsed);
+        const savedAt = localStorage.getItem(STORAGE_SAVED_AT_KEY) || parsed?.meta?.savedAt;
+        setSaveStatus(formatSavedAtLabel(savedAt));
+        renderOverviewSummary(parsed);
+        renderRecentHistoryList();
+        renderHistoryTable();
+      } catch (error) {
+        console.error('読込失敗', error);
+        setSaveStatus('読込失敗');
+      }
+    }
+
+    let autosaveTimer = null;
+    function scheduleAutosave() {
+      if (autosaveTimer) clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(saveStateToLocalStorage, 300);
+    }
+
+    function downloadTextFile(filename, text, mimeType) {
+      const blob = new Blob([text], { type: mimeType || 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function exportStateAsJson() {
+      const state = collectStateFromUI();
+      const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+      downloadTextFile(`resident-progress-${stamp}.json`, JSON.stringify(state, null, 2), 'application/json;charset=utf-8');
+      setSaveStatus(formatSavedAtLabel(state.meta.savedAt) + ' / JSON書き出し済');
+    }
+
+    function importStateFromJsonText(text) {
+      try {
+        const parsed = JSON.parse(text);
+        applyStateToUI(parsed);
+        saveStateToLocalStorage();
+        renderOverviewSummary(collectStateFromUI());
+      } catch (error) {
+        console.error('JSON読込失敗', error);
+        setSaveStatus('JSON読込失敗');
+      }
+    }
+
+    document.addEventListener('input', (e) => {
+      if (e.target.closest('#screen-input')) scheduleAutosave();
+    });
+    document.addEventListener('change', (e) => {
+      if (e.target.closest('#screen-input')) scheduleAutosave();
+    });
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('#screen-input .counter-btn, #screen-input .status-chip');
+      if (!target) return;
+      setTimeout(scheduleAutosave, 0);
+    });
+
+    document.getElementById('export-json-btn')?.addEventListener('click', exportStateAsJson);
+    document.getElementById('import-json-btn')?.addEventListener('click', () => {
+      const input = document.getElementById('import-json-input');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    });
+    document.getElementById('import-json-input')?.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => importStateFromJsonText(String(evt.target?.result || ''));
+      reader.readAsText(file, 'utf-8');
+    });
+
+    function buildHistoryLabel(state) {
+      const d = new Date(state?.meta?.savedAt || new Date().toISOString());
+      const pad = (n) => String(n).padStart(2, '0');
+      const when = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      const rotation = state?.settings?.rotation || 'ローテーション未設定';
+      const yearLabel = state?.settings?.trainingYear === '2024' ? '2024年度以前' : '2025年度以降';
+      return `${when} / ${rotation} / ${yearLabel}`;
+    }
+
+    function getHistoryList() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function setHistoryList(list) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    }
+
+    function pushHistorySnapshot(state) {
+      const list = getHistoryList();
+      const entry = {
+        savedAt: state?.meta?.savedAt || new Date().toISOString(),
+        label: buildHistoryLabel(state),
+        counters: state.counters || {},
+        chips: state.chips || {},
+        settings: state.settings || {}
+      };
+      list.unshift(entry);
+      setHistoryList(list.slice(0, 3));
+    }
+
+    function renderRecentHistoryList() {
+      const wrap = document.getElementById('recent-history-list');
+      if (!wrap) return;
+      const list = getHistoryList();
+      if (!list.length) {
+        wrap.innerHTML = '<div class="link-item">まだ履歴はありません。「履歴に保存」を押すとここに追加されます。</div>';
+        return;
+      }
+      wrap.innerHTML = list.map((item, idx) => {
+        const caseGp = item.counters?.case_gp || { done:0, mid:0, todo:0 };
+        const summaryGp = item.counters?.summary_gp || { done:0, mid:0, todo:0 };
+        const portfolioGp = item.counters?.portfolio_gp || { done:0, mid:0, total:0 };
+        const portfolioFm = item.counters?.portfolio_fm || { done:0, mid:0, total:0 };
+        return `<div class="link-item"><strong>${idx + 1}. ${item.label}</strong><br>症例登録 済${caseGp.done} / 途中${caseGp.mid} / 未${caseGp.todo}<br>病歴要約 済${summaryGp.done} / 途中${summaryGp.mid} / 未${summaryGp.todo}<br>総診PF ${Number(portfolioGp.done||0)+Number(portfolioGp.mid||0)}/${portfolioGp.total || 0} ・ 家庭医PF ${Number(portfolioFm.done||0)+Number(portfolioFm.mid||0)}/${portfolioFm.total || 0}</div>`;
+      }).join('');
+    }
+
+    function pill(label, cls) {
+      return `<span class="hl-pill ${cls}">${label}</span>`;
+    }
+
+    function fmtCompactCounter(counter, withTotal = false) {
+      const c = counter || { done:0, mid:0, todo:0, total:0 };
+      const parts = [
+        pill(`済${Number(c.done||0)}`, Number(c.done||0) > 0 ? 'hl-done' : 'hl-none'),
+        pill(`途中${Number(c.mid||0)}`, Number(c.mid||0) > 0 ? 'hl-mid' : 'hl-none'),
+        pill(`未${Number(c.todo||0)}`, Number(c.todo||0) > 0 ? 'hl-none' : 'hl-na')
+      ];
+      if (withTotal) parts.push(pill(`全${Number(c.total||0)}`, 'hl-na'));
+      return parts.join(' ');
+    }
+
+    function halfPill(label, mode) {
+      if (label === '未' || label === '未着手') return pill(label, 'hl-none');
+      const strongLabels = ['承認済','入力済','実施済'];
+      return pill(label, strongLabels.includes(label) ? `${mode === 'fm' ? 'hl-fm-strong' : 'hl-gp-strong'}` : `${mode === 'fm' ? 'hl-fm-soft' : 'hl-gp-soft'}`);
+    }
+
+    function historyPeriodState(settings) {
+      const s = settings || {};
+      return {
+        first: Boolean(s.naika49 || s.naika712 || s.naika82 || s.naikaOther),
+        second: Boolean(s.naika103 || s.naika712 || s.naika82 || s.naikaOther)
+      };
+    }
+
+    function fmtHalfStatus(firstIdx, secondIdx, labels, mode = 'gp', settings = null) {
+      const periods = historyPeriodState(settings);
+      const a = Number(firstIdx || 0);
+      const b = Number(secondIdx || 0);
+      const aHtml = periods.first
+        ? halfPill(labels[Math.min(a, labels.length - 1)] || labels[0], mode)
+        : pill('対象外', 'hl-na');
+      const bHtml = periods.second
+        ? halfPill(labels[Math.min(b, labels.length - 1)] || labels[0], mode)
+        : pill('対象外', 'hl-na');
+      return `上期 ${aHtml} / 下期 ${bHtml}`;
+    }
+
+    function fmtSimpleStatus(idx, labels, mode = 'gp') {
+      const n = Number(idx || 0);
+      const list = labels || ['未','実施中','実施済'];
+      const label = list[Math.min(n, list.length - 1)] || list[0];
+      if (label === '未' || label === '未着手') return pill(label, 'hl-none');
+      const strong = Math.min(n, list.length - 1) === list.length - 1;
+      if (mode === 'fm') return pill(label, strong ? 'hl-fm-strong' : 'hl-fm-soft');
+      return pill(label, strong ? 'hl-gp-strong' : 'hl-gp-soft');
+    }
+
+    function fmtRequiredStatus(idx, req, mode = 'gp') {
+      const n = Number(idx || 0);
+      const r = Number(req || 0);
+      if (r === 0) return pill('対象外', 'hl-na');
+      if (n <= 0) return pill('未', 'hl-none');
+      const done = Math.min(n, r);
+      const cls = done < r ? (mode === 'fm' ? 'hl-fm-soft' : 'hl-gp-soft') : (mode === 'fm' ? 'hl-fm-strong' : 'hl-gp-strong');
+      return pill(`${done}/${r}`, cls);
+    }
+
+    function countOffjtGp(item) {
+      const vals = [
+        Number(item?.chips?.['offjt-gp-ethics-chip'] || 0),
+        Number(item?.chips?.['offjt-gp-safety-chip'] || 0),
+        Number(item?.chips?.['offjt-gp-infection-chip'] || 0)
+      ];
+      const done = vals.filter(v => v >= 2).length;
+      return pill(`${done}/3`, done >= 3 ? 'hl-gp-strong' : (done > 0 ? 'hl-gp-soft' : 'hl-none'));
+    }
+
+    function fmtResearchGpCompact(item) {
+      const route = item?.settings?.researchGpRoute || '学会発表';
+      const n = Number(item?.chips?.['research-gp-chip'] || 0);
+      const labels = ['未','実施中','実施済'];
+      const label = labels[Math.min(n, 2)] || '未';
+      const shown = route === '論文' && label !== '未' ? `論文 ${label}` : label;
+      if (label === '未') return pill(shown, 'hl-none');
+      return pill(shown, n >= 2 ? 'hl-gp-strong' : 'hl-gp-soft');
+    }
+
+    function fmtResearchFmCompact(item) {
+      const route = item?.settings?.researchFmRoute || '学会発表';
+      const n = Number(item?.chips?.['research-fm-chip'] || 0);
+      let label = '未';
+      if (route === '学会発表') label = ['未','実施中','1/2','2/2'][Math.min(n, 3)] || '未';
+      else if (route === '論文') label = ['未','実施中','論文済'][Math.min(n, 2)] || '未';
+      else label = ['未','実施中','著書済'][Math.min(n, 2)] || '未';
+      if (label === '未') return pill(label, 'hl-none');
+      const strong = (route === '学会発表' && n >= 3) || (route !== '学会発表' && n >= 2);
+      return pill(label, strong ? 'hl-fm-strong' : 'hl-fm-soft');
+    }
+
+    function cellBlock(lines) {
+      if (!lines || !lines.length) return '<div class="history-block"><div class="history-line na">-</div></div>';
+      return `<div class="history-block">${lines.map(line => `<div class="history-line ${line.cls || ''}">${line.html || line.text}</div>`).join('')}</div>`;
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('history-table-body');
+      if (!tbody) return;
+      const list = getHistoryList();
+      const ordered = [list[2], list[1], list[0]];
+
+      const head1 = document.getElementById('history-head-1');
+      const head2 = document.getElementById('history-head-2');
+      const head3 = document.getElementById('history-head-3');
+      if (head1) head1.textContent = ordered[0] ? ordered[0].savedAt?.slice(0,10) || `3. ${ordered[0].label}` : '履歴3';
+      if (head2) head2.textContent = ordered[1] ? ordered[1].savedAt?.slice(0,10) || `2. ${ordered[1].label}` : '履歴2';
+      if (head3) head3.textContent = ordered[2] ? ordered[2].savedAt?.slice(0,10) || `1. ${ordered[2].label}` : '履歴1';
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td class="history-item-cell">まだ履歴はありません</td><td>-</td><td>-</td><td>-</td></tr>';
+        return;
+      }
+
+      const rows = [
+        { section:'J-OSLER / 研修評価' },
+        { label:'症例登録', help:'case_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtCompactCounter(item?.counters?.case_gp)}]) },
+        { label:'病歴要約', help:'summary_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtCompactCounter(item?.counters?.summary_gp)}]) },
+        { label:'技術技能評価', help:'skill_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtHalfStatus(item?.chips?.['skill-gp-first-chip'], item?.chips?.['skill-gp-second-chip'], ['未','入力済','承認済'], 'gp', item?.settings)}]) },
+        { label:'研修評価：自己評価', help:'self_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtHalfStatus(item?.chips?.['self-gp-first-chip'], item?.chips?.['self-gp-second-chip'], ['未','入力中','入力済'], 'gp', item?.settings)}]) },
+        { label:'研修評価：指導医評価', help:'supervisor_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtHalfStatus(item?.chips?.['supervisor-gp-first-chip'], item?.chips?.['supervisor-gp-second-chip'], ['未','入力中','入力済'], 'gp', item?.settings)}]) },
+        { label:'研修評価：プログラム評価', help:'program_gp', cell:(item)=>cellBlock([{cls:'gp', text:fmtSimpleStatus(item?.chips?.['program-gp-chip'], ['未','入力中','入力済'])}]) },
+        { label:'多職種評価', help:'multi_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtHalfStatus(item?.chips?.['multi-gp-first-chip'], item?.chips?.['multi-gp-second-chip'], ['未','依頼済','実施済'], 'gp', item?.settings)}]) },
+        { section:'共通項目' },
+        { label:'ポートフォリオ', help:'portfolio_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtCompactCounter(item?.counters?.portfolio_gp)}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtCompactCounter(item?.counters?.portfolio_fm)}`}]) },
+        { label:'研究', help:'research_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtResearchGpCompact(item)}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtResearchFmCompact(item)}`}]) },
+        { label:'Off-JT', help:'offjt_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${countOffjtGp(item)}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtSimpleStatus(item?.chips?.['offjt-fm-chip'], ['未','実施中','実施済'], 'fm')}`}]) },
+        { label:'学習の記録', help:'learning_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtSimpleStatus(item?.chips?.['learning-gp-chip'], ['未','記載中','記載済'], 'gp')}]) },
+        { label:'定期的な振り返り', help:'regular_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtSimpleStatus(item?.chips?.['regular-gp-chip'], ['未','記載中','記載済'], 'gp')}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtSimpleStatus(item?.chips?.['regular-fm-chip'], ['未','記載中','記載済'], 'fm')}`}]) },
+        { label:'1年毎の振り返り', help:'annual_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtSimpleStatus(item?.chips?.['annual-gp-chip'], ['未','記載中','記載済'], 'gp')}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtSimpleStatus(item?.chips?.['annual-fm-chip'], ['未','記載中','記載済'], 'fm')}`}]) },
+        { section:'業務基盤型評価' },
+        { label:'Mini-CEX', help:'minicex_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtRequiredStatus(item?.chips?.['minicex-gp-chip'], item?.settings?.reqMinicexGp || 0, 'gp')}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtRequiredStatus(item?.chips?.['minicex-fm-chip'], 2, 'fm')}`}]) },
+        { label:'360度評価', help:'360_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtRequiredStatus(item?.chips?.['eval360-gp-chip'], item?.settings?.req360Gp || 0, 'gp')}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtRequiredStatus(item?.chips?.['eval360-fm-chip'], 2, 'fm')}`}]) },
+        { label:'CbD', help:'cbd_both', cell:(item)=>cellBlock([{cls:'gp', html:`<span class="summary-em">総診</span> ${fmtRequiredStatus(item?.chips?.['cbd-gp-chip'], item?.settings?.reqCbdGp || 0, 'gp')}`},{cls:'fm', html:`<span class="summary-em">家庭医</span> ${fmtRequiredStatus(item?.chips?.['cbd-fm-chip'], 4, 'fm')}`}]) },
+        { section:'その他' },
+        { label:'小児科研修', help:'peds_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtSimpleStatus(item?.chips?.['peds-gp-chip'], ['未','記載中','記載済'], 'gp')}]) },
+        { label:'救急科研修', help:'em_gp', cell:(item)=>cellBlock([{cls:'gp', html:fmtSimpleStatus(item?.chips?.['em-gp-chip'], ['未','記載中','記載済'], 'gp')}]) }
+      ];
+
+      tbody.innerHTML = rows.map(row => {
+        if (row.section) return `<tr class="section-row"><td colspan="4">${row.section}</td></tr>`;
+        const cells = ordered.map(item => `<td class="history-compact-cell">${item ? row.cell(item) : cellBlock()}</td>`).join('');
+        const labelHtml = row.help ? `<div class="history-item-wrap"><span class="history-item-name">${row.label}</span><button class="help-btn history-row-help" data-history-help="${row.help}">?</button></div>` : row.label;
+        return `<tr><td class="history-item-cell">${labelHtml}</td>${cells}</tr>`;
+      }).join('');
+    }
+
+    function setGraph3(elId, title, done, mid, todo, total) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.innerHTML = `<strong>${title}</strong><div class="counter-bar" style="--done:${done}fr; --mid:${mid}fr; --todo:${todo}fr; height:10px; margin-top:6px;"><span></span><span></span><span></span></div><div class="desc-sub" style="margin-top:6px;">済 ${done} / 途中 ${mid} / 未 ${todo} / 全 ${total}</div>`;
+    }
+
+    function setGraph2(elId, title, done, remain, total, noteHtml) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const safeTotal = Math.max(Number(total || 0), 1);
+      const donePct = Math.max(0, Math.min(100, (Number(done || 0) / safeTotal) * 100));
+      const remainPct = Math.max(0, 100 - donePct);
+      const remainStyle = Number(remain || 0) > 0 ? `flex:${Math.max(remainPct, 8)}; min-width:8px;` : 'flex:0; min-width:0;';
+      el.innerHTML = `<strong>${title}</strong><div class="ratio-bar"><span class="ratio-bar-done" style="flex:${Math.max(donePct, 0)};"></span><span class="ratio-bar-remain" style="${remainStyle}"></span></div><div class="desc-sub" style="margin-top:6px;">達成 ${done} / 残 ${remain} / 全 ${total}</div>${noteHtml || ''}`;
+    }
+
+    function setGraphPortfolio(elId, title, done, mid, todo, total) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.innerHTML = `<strong>${title}</strong><div class="counter-bar" style="--done:${done}fr; --mid:${mid}fr; --todo:${todo}fr; height:10px; margin-top:6px;"><span></span><span></span><span></span></div><div class="desc-sub" style="margin-top:6px;">済 ${done} / 途中 ${mid} / 未 ${todo} / 全 ${total}</div>`;
+    }
+
+    function metricHtml(label, done, total, alert) {
+      return `<span class="subtle-metric ${alert ? 'alert' : ''}">${label} ${done}/${total}</span>`;
+    }
+
+    function renderOverviewSummary(state) {
+      const s = state || collectStateFromUI();
+      const counters = s.counters || {};
+      const chips = s.chips || {};
+      const settings = s.settings || {};
+
+      const caseGp = counters.case_gp || { done:0, mid:0, todo:0, total:0 };
+      const summaryGp = counters.summary_gp || { done:0, mid:0, todo:0, total:0 };
+      const portfolioGp = counters.portfolio_gp || { done:0, mid:0, todo:0, total:0 };
+      const portfolioFm = counters.portfolio_fm || { done:0, mid:0, todo:0, total:0 };
+
+      setGraph3('summary-case-gp', 'J-OSLER 症例登録', Number(caseGp.done || 0), Number(caseGp.mid || 0), Number(caseGp.todo || 0), Number(caseGp.total || 0));
+      setGraph3('summary-summary-gp', 'J-OSLER 病歴要約', Number(summaryGp.done || 0), Number(summaryGp.mid || 0), Number(summaryGp.todo || 0), Number(summaryGp.total || 0));
+
+      const portfolioGpDone = Number(portfolioGp.done || 0);
+      const portfolioGpRemain = Number(portfolioGp.mid || 0) + Number(portfolioGp.todo || 0);
+      const portfolioGpTotal = Number(portfolioGp.total || 0);
+      const portfolioFmDone = Number(portfolioFm.done || 0);
+      const portfolioFmRemain = Number(portfolioFm.mid || 0) + Number(portfolioFm.todo || 0);
+      const portfolioFmTotal = Number(portfolioFm.total || 0);
+
+      setGraphPortfolio('summary-portfolio-gp', '総合診療ポートフォリオ', Number(portfolioGp.done || 0), Number(portfolioGp.mid || 0), Number(portfolioGp.todo || 0), portfolioGpTotal);
+      setGraphPortfolio('summary-portfolio-fm', '家庭医療ポートフォリオ', Number(portfolioFm.done || 0), Number(portfolioFm.mid || 0), Number(portfolioFm.todo || 0), portfolioFmTotal);
+
+      const caseTotal = Number(caseGp.total || 0);
+      const summaryTotal = Number(summaryGp.total || 0);
+      const reqMiniGp = Number(settings.reqMinicexGp || 0);
+      const req360Gp = Number(settings.req360Gp || 0);
+      const reqCbdGp = Number(settings.reqCbdGp || 0);
+
+      const gpMiniDone = Math.min(Number(chips['minicex-gp-chip'] || 0), reqMiniGp);
+      const gp360Done = Math.min(Number(chips['eval360-gp-chip'] || 0), req360Gp);
+      const gpCbdDone = Math.min(Number(chips['cbd-gp-chip'] || 0), reqCbdGp);
+      const gpOverallDone = Number(caseGp.done || 0) + Number(summaryGp.done || 0) + portfolioGpDone + gpMiniDone + gp360Done + gpCbdDone;
+      const gpOverallTotal = caseTotal + summaryTotal + portfolioGpTotal + reqMiniGp + req360Gp + reqCbdGp;
+      const gpOverallRemain = Math.max(gpOverallTotal - gpOverallDone, 0);
+
+      const fmMini = Math.min(Number(chips['minicex-fm-chip'] || 0), 2);
+      const fm360 = Math.min(Number(chips['eval360-fm-chip'] || 0), 2);
+      const fmCbd = Math.min(Number(chips['cbd-fm-chip'] || 0), 4);
+      const fmOverallDone = portfolioFmDone + fmMini + fm360 + fmCbd;
+      const fmOverallTotal = portfolioFmTotal + 2 + 2 + 4;
+      const fmOverallRemain = Math.max(fmOverallTotal - fmOverallDone, 0);
+
+      const firstEnabled = Boolean(settings.naika49 || settings.naika712 || settings.naika82 || settings.naikaOther);
+      const secondEnabled = Boolean(settings.naika103 || settings.naika712 || settings.naika82 || settings.naikaOther);
+      const halfDone = (a, b, threshold = 2) => {
+        const targets = [];
+        if (firstEnabled) targets.push(Number(a || 0) >= threshold ? 1 : 0);
+        if (secondEnabled) targets.push(Number(b || 0) >= threshold ? 1 : 0);
+        if (!targets.length) return 0;
+        return targets.every(Boolean) ? 1 : 0;
+      };
+      const simpleDone = (idx, threshold = 2) => Number(idx || 0) >= threshold ? 1 : 0;
+      const requiredDone = (idx, req) => req > 0 && Number(idx || 0) >= req ? 1 : 0;
+
+      const gpSkillDone = halfDone(chips['skill-gp-first-chip'], chips['skill-gp-second-chip'], 2);
+      const gpSelfDone = halfDone(chips['self-gp-first-chip'], chips['self-gp-second-chip'], 2);
+      const gpSupervisorDone = halfDone(chips['supervisor-gp-first-chip'], chips['supervisor-gp-second-chip'], 2);
+      const gpProgramDone = simpleDone(chips['program-gp-chip'], 2);
+      const gpMultiDone = halfDone(chips['multi-gp-first-chip'], chips['multi-gp-second-chip'], 2);
+      const gpResearchDone = simpleDone(chips['research-gp-chip'], 2);
+      const gpOffjtDone = [chips['offjt-gp-ethics-chip'], chips['offjt-gp-safety-chip'], chips['offjt-gp-infection-chip']].filter(v => Number(v || 0) >= 2).length;
+      const gpReflectDone = simpleDone(chips['regular-gp-chip'], 2) + simpleDone(chips['annual-gp-chip'], 2);
+      const gpOtherDone = simpleDone(chips['peds-gp-chip'], 2) + simpleDone(chips['em-gp-chip'], 2);
+
+      const fmResearchDone = (() => {
+        const route = settings.researchFmRoute || '学会発表';
+        const n = Number(chips['research-fm-chip'] || 0);
+        return route === '学会発表' ? (n >= 3 ? 1 : 0) : (n >= 2 ? 1 : 0);
+      })();
+      const fmOffjtDone = simpleDone(chips['offjt-fm-chip'], 2);
+      const fmReflectDone = simpleDone(chips['regular-fm-chip'], 2) + simpleDone(chips['annual-fm-chip'], 2);
+
+      const gpMetrics = [
+        metricHtml('症例登録', Number(caseGp.done || 0), caseTotal, Number(caseGp.done || 0) < caseTotal),
+        metricHtml('病歴要約', Number(summaryGp.done || 0), summaryTotal, Number(summaryGp.done || 0) < summaryTotal),
+        metricHtml('技術技能', gpSkillDone, 1, gpSkillDone < 1),
+        metricHtml('研修評価', gpSelfDone + gpSupervisorDone + gpProgramDone + gpMultiDone, 4, (gpSelfDone + gpSupervisorDone + gpProgramDone + gpMultiDone) < 4),
+        metricHtml('PF', portfolioGpDone, portfolioGpTotal, portfolioGpRemain > 0),
+        metricHtml('研究', gpResearchDone, 1, gpResearchDone < 1),
+        metricHtml('Off-JT', gpOffjtDone, 3, gpOffjtDone < 3),
+        metricHtml('振り返り', gpReflectDone, 2, gpReflectDone < 2),
+        metricHtml('Mini-CEX', gpMiniDone, reqMiniGp, requiredDone(chips['minicex-gp-chip'], reqMiniGp) < 1),
+        metricHtml('360度', gp360Done, req360Gp, requiredDone(chips['eval360-gp-chip'], req360Gp) < 1),
+        metricHtml('CbD', gpCbdDone, reqCbdGp, requiredDone(chips['cbd-gp-chip'], reqCbdGp) < 1),
+        metricHtml('その他', gpOtherDone, 2, gpOtherDone < 2)
+      ].join('');
+
+      const fmMetrics = [
+        metricHtml('PF', portfolioFmDone, portfolioFmTotal, portfolioFmRemain > 0),
+        metricHtml('研究', fmResearchDone, 1, fmResearchDone < 1),
+        metricHtml('Off-JT', fmOffjtDone, 1, fmOffjtDone < 1),
+        metricHtml('振り返り', fmReflectDone, 2, fmReflectDone < 2),
+        metricHtml('Mini-CEX', fmMini, 2, fmMini < 2),
+        metricHtml('360度', fm360, 2, fm360 < 2),
+        metricHtml('CbD', fmCbd, 4, fmCbd < 4)
+      ].join('');
+
+      const gpBreakdownHtml = `<div class="inline-metrics">${gpMetrics}</div>`;
+      const fmBreakdownHtml = `<div class="inline-metrics">${fmMetrics}</div>`;
+
+      setGraph2('summary-overall-gp', '総合診療 主要進捗', gpOverallDone, gpOverallRemain, gpOverallTotal, gpBreakdownHtml);
+      setGraph2('summary-overall-fm', '家庭医療 主要進捗', fmOverallDone, fmOverallRemain, fmOverallTotal, fmBreakdownHtml);
+    }
+
+    const historyDescCard = document.getElementById('history-desc-card');
+    const historyDescTitle = document.getElementById('history-desc-title');
+    const historyDescSub = document.getElementById('history-desc-sub');
+    const historyDescContent = document.getElementById('history-desc-content');
+    const historyDescClose = document.getElementById('history-desc-close');
+
+    function joinHistoryHelp(gpKey, fmKey, title, sub) {
+      const gp = helpData[gpKey];
+      const fm = helpData[fmKey];
+      return {
+        title,
+        sub,
+        html: `<div style="display:grid; gap:10px;"><div style="border:1px solid var(--line); border-radius:12px; padding:9px; background:var(--blue-verysoft);"><div class="desc-sub" style="margin-bottom:4px; color:var(--blue-strong);">総合診療</div>${gp?.html || ''}</div><div style="border:1px solid var(--line); border-radius:12px; padding:9px; background:var(--orange-verysoft);"><div class="desc-sub" style="margin-bottom:4px; color:var(--orange-strong);">家庭医療</div>${fm?.html || ''}</div></div>`
+      };
+    }
+
+    const historyHelpData = {
+      case_gp: helpData.case_gp,
+      summary_gp: helpData.summary_gp,
+      skill_gp: helpData.skill_gp,
+      self_gp: helpData.self_gp,
+      supervisor_gp: helpData.supervisor_gp,
+      program_gp: helpData.program_gp,
+      multi_gp: helpData.multi_gp,
+      learning_gp: helpData.learning_gp,
+      peds_gp: helpData.peds_gp,
+      em_gp: helpData.em_gp,
+      portfolio_both: joinHistoryHelp('portfolio_gp','portfolio_fm','ポートフォリオ','総診 / 家庭医療の両方を比較できます。'),
+      research_both: joinHistoryHelp('research_gp','research_fm','研究','総診 / 家庭医療の両方を比較できます。'),
+      offjt_both: joinHistoryHelp('offjt_gp','offjt_fm','Off-JT','総診 / 家庭医療の両方を比較できます。'),
+      regular_both: joinHistoryHelp('regular_gp','regular_fm','定期的な振り返り','総診 / 家庭医療の両方を比較できます。'),
+      annual_both: joinHistoryHelp('annual_gp','annual_fm','1年毎の振り返り','総診 / 家庭医療の両方を比較できます。'),
+      minicex_both: joinHistoryHelp('minicex_gp','minicex_fm','Mini-CEX','総診 / 家庭医療の両方を比較できます。'),
+      '360_both': joinHistoryHelp('360_gp','360_fm','360度評価','総診 / 家庭医療の両方を比較できます。'),
+      cbd_both: joinHistoryHelp('cbd_gp','cbd_fm','CbD','総診 / 家庭医療の両方を比較できます。')
+    };
+
+    function resetHistoryPanel() {
+      if (historyDescCard) historyDescCard.style.display = 'none';
+      if (historyDescTitle) historyDescTitle.textContent = '履歴一覧の説明';
+      if (historyDescSub) historyDescSub.textContent = '履歴一覧の ? を押すと説明を表示します。';
+      if (historyDescContent) historyDescContent.innerHTML = '<div class="desc-placeholder">履歴一覧の各項目の ? を押してください。</div>';
+    }
+
+    function showHistoryPanel(key) {
+      const data = historyHelpData[key];
+      if (!data) return;
+      if (historyDescCard) {
+        historyDescCard.style.display = 'block';
+        historyDescCard.scrollTop = 0;
+      }
+      if (historyDescTitle) historyDescTitle.textContent = data.title || '履歴一覧の説明';
+      if (historyDescSub) historyDescSub.textContent = data.sub || '';
+      if (historyDescContent) historyDescContent.innerHTML = data.html || '';
+    }
+
+    document.getElementById('history-table-body')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.history-row-help');
+      if (!btn) return;
+      showHistoryPanel(btn.dataset.historyHelp);
+    });
+    if (historyDescClose) historyDescClose.addEventListener('click', resetHistoryPanel);
+
+    document.getElementById('save-history-btn')?.addEventListener('click', () => {
+      const state = collectStateFromUI();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORAGE_SAVED_AT_KEY, state.meta.savedAt);
+      pushHistorySnapshot(state);
+      setSaveStatus(formatSavedAtLabel(state.meta.savedAt) + ' / 履歴保存済');
+      renderRecentHistoryList();
+      renderHistoryTable();
+      renderOverviewSummary(state);
+    });
+
+    loadStateFromLocalStorage();
+    renderRecentHistoryList();
+    renderHistoryTable();
+    renderOverviewSummary(collectStateFromUI());
+    window.setTimeout(scheduleAutosave, 0);
+  </script>
+</body>
+</html>
