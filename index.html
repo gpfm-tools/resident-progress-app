@@ -1060,7 +1060,7 @@
       if (t.pattern === 'gpOnly') t.pattern = 'pattern4';
       if (t.pattern === 'pattern4' && String(t.years) === '4' && hasFamilyTrainingInTimeline(t)) t.pattern = 'pattern2';
       if (!timelineTemplateKeys.includes(t.pattern)) t.pattern = 'pattern2';
-      const allowedYears = ['3','4','5','6'];
+      const allowedYears = ['3','4','5','6','7','8','9','10'];
       if (!allowedYears.includes(String(t.years))) t.years = String(timelinePatterns[t.pattern].years || 4);
       if (!timelineMonths[Number(t.startMonth || 4) - 1]) t.startMonth = '4';
       if (!/^\d{4}$/.test(String(t.startYear || ''))) t.startYear = '2026';
@@ -1134,7 +1134,7 @@
       const pattern = document.getElementById('timeline-pattern');
       if (!start || !years || !startYear || !pattern) return;
       start.innerHTML = timelineMonths.map((label, idx) => `<option value="${idx + 1}" ${String(idx + 1) === String(state.timeline.startMonth) ? 'selected' : ''}>${label}</option>`).join('');
-      years.innerHTML = ['3','4','5','6'].map(value => `<option value="${value}" ${String(value) === String(state.timeline.years) ? 'selected' : ''}>${value}年</option>`).join('');
+      years.innerHTML = ['3','4','5','6','7','8','9','10'].map(value => `<option value="${value}" ${String(value) === String(state.timeline.years) ? 'selected' : ''}>${value}年</option>`).join('');
       startYear.innerHTML = Array.from({ length:16 }, (_, idx) => String(2020 + idx)).map(value => `<option value="${value}" ${String(value) === String(state.timeline.startYear) ? 'selected' : ''}>${value}年</option>`).join('');
       pattern.innerHTML = timelineTemplateKeys.map(key => `<option value="${key}" ${key === state.timeline.pattern ? 'selected' : ''}>${timelinePatterns[key].label}</option>`).join('');
     }
