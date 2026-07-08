@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>総合診療・家庭医療 進捗管理アプリ v1.0</title>
+  <meta name="theme-color" content="#1864c8" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./icon-180.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>総合診療・家庭医療 進捗管理アプリ v1.0.0</title>
   <style>
     :root {
       --bg:#f5f7fb; --card:#ffffff; --line:#d8dee9; --line-strong:#c8d1dc; --text:#1f2937; --muted:#6b7280;
@@ -27,7 +31,7 @@
     .app-meta .usage-overview summary::before { content:'>'; color:var(--muted); font-size:.72rem; transition:transform .15s ease; }
     .app-meta .usage-overview[open] summary::before { transform:rotate(90deg); }
     .app-meta .usage-body { margin-top:6px; line-height:1.75; }
-    .app-meta .note-link-line { display:block; margin:8px 0 4px; padding-left:1em; font-weight:400; }
+    .app-meta .note-link-line { display:block; margin:2px 0 4px; padding-left:1em; font-weight:400; }
     .app-meta a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
     .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
     .card-head { padding:12px 14px 0; font-weight:700; font-size:.92rem; }
@@ -62,7 +66,9 @@
     .timeline-cell-stack { display:grid; gap:3px; min-width:49px; }
     .timeline-cell-select { width:100%; min-width:49px; border:1px solid transparent; border-radius:8px; padding:5px 1px; font-size:.56rem; font-weight:700; color:#334155; box-shadow:0 1px 2px rgba(15,23,42,.04); }
     .timeline-cell-select.rot-gp { background:var(--blue-soft); border-color:#d9eaff; color:#1854a6; }
+    .timeline-cell-select.rot-gp2 { background:#e4f0ff; border-color:#bfdbfe; color:#164f9c; }
     .timeline-cell-select.rot-fm { background:var(--orange-soft); border-color:#fde1d0; color:#a34412; }
+    .timeline-cell-select.rot-fm2 { background:#ffe7d6; border-color:#fdc9aa; color:#8f3d0f; }
     .timeline-cell-select.rot-naika { background:#edf7f0; border-color:#cfe8d7; color:#276749; }
     .timeline-cell-select.rot-peds { background:#f3efff; border-color:#ddd2ff; color:#5b3aa4; }
     .timeline-cell-select.rot-em { background:#f4efe7; border-color:#ded1bf; color:#6b5540; }
@@ -77,17 +83,21 @@
     .timeline-summary-item.major.fm-major { background:#fff5ee; border-top-color:#fde1d0; border-bottom-color:#fde1d0; }
     .timeline-summary-item.fm-line { background:#fffaf6; }
     .timeline-summary-item.undecided-line { grid-column:1 / -1; background:#fff; }
-    .timeline-summary-item strong { font-size:.72rem; white-space:nowrap; font-weight:400; }
+    .timeline-summary-item strong { display:block; font-size:.72rem; white-space:normal; font-weight:400; line-height:1.28; }
     .timeline-summary-item.major strong { font-size:.78rem; font-weight:400; }
+    .timeline-label-note { display:block; color:var(--muted); font-size:.64rem; margin-top:2px; text-align:left; }
     .timeline-summary-item a { color:#1d4ed8; text-decoration:none; }
     .timeline-summary-item a.timeline-link { color:#1d4ed8; text-decoration:underline; text-underline-offset:2px; font-size:inherit; line-height:inherit; font-weight:400; }
-    .timeline-summary-item span { color:var(--muted); text-align:right; font-weight:400; }
+    .timeline-summary-item > span { color:var(--muted); text-align:right; font-weight:400; }
     .timeline-summary-item.attention { background:#fffdf2; color:#5f4b12; }
     .timeline-summary-item.fm-line.attention { background:#fffaf6; color:#6b3d1a; }
     .timeline-summary-item.major.fm-major.attention { background:#fff5ee; color:#6b3d1a; }
     .timeline-summary-item.undecided-line.attention { background:#fff; color:var(--text); }
     .timeline-note { margin:10px 0 0; color:var(--muted); font-size:.72rem; line-height:1.55; }
     .input-layout { display:grid; grid-template-columns:minmax(0,1.58fr) minmax(250px,.62fr); gap:8px; align-items:start; }
+    #screen-overview .input-layout { grid-template-columns:minmax(0,1fr) 220px; gap:12px; }
+    #screen-overview .side-panel-wrap { min-width:0; }
+    #screen-overview .desc-panel { padding:8px; }
     .table-wrap { overflow-x:auto; overflow-y:hidden; max-height:none; }
     table { width:100%; min-width:520px; border-collapse:separate; border-spacing:0; }
     th,td { border-bottom:1px solid var(--line); border-right:1px solid #eef2f7; vertical-align:top; padding:5px 4px; font-size:.75rem; background:#fff; }
@@ -238,7 +248,7 @@
     .nav-btn { min-width:150px; border:1px solid var(--line); border-bottom:0; background:#e9edf4; border-radius:10px 10px 0 0; padding:9px 14px 8px; font-weight:700; color:#475569; cursor:pointer; }
     .nav-btn.active { background:#fff; color:#1d4ed8; border-color:var(--line-strong); box-shadow:0 -2px 8px rgba(15,23,42,.05); transform:translateY(1px); }
     @media (max-width:800px) {
-      .top-minimal,.memo-links,.input-layout { grid-template-columns:1fr; }
+      .top-minimal,.memo-links,.input-layout,#screen-overview .input-layout { grid-template-columns:1fr; }
       .timeline-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .top-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       #screen-input.active .side-panel-wrap { position:fixed; left:8px; right:8px; bottom:12px; top:auto; max-height:none; z-index:95; }
@@ -258,7 +268,7 @@
       <div>
         <h1>総合診療・家庭医療 専攻医 進捗管理アプリ</h1>
         <div class="app-meta">
-          <div>v1.0 ｜ 公開日 2026-07-11 ｜ 最終更新日 2026-07-11</div>
+          <div>v1.0.0 ｜ 公開日 2026-07-11 ｜ 最終更新日 2026-07-11</div>
           <p>このアプリは、総合診療・家庭医療専門研修の進捗管理を補助する目的で作成された、個人制作の非公式アプリです。制度更新のタイムラグやミスの可能性もありますので、各自で公式情報を確認することをおすすめします。</p>
           <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMHqx18xFb6KatqZPTWbNUOii5TFWiM_OTG0bwy6B1DNc-ZQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">感想・不具合報告・改善要望はこちらから（Googleフォーム）</a></p>
           <details class="usage-overview">
@@ -268,7 +278,9 @@
               　入力欄：②設定をプログラムの状況に合わせて入力してください<br>
               　　　　　③定期タスクのリマインドを参考に、達成状況を適宜入力してください<br>
               　　　　　④「履歴に保存」を押してください<br>
-              　履歴欄：⑤履歴/集計欄に記録されます。
+              　履歴欄：⑤履歴/集計欄に記録されます<br>
+              <br>
+              　※注：記録は端末・ブラウザに自動保存されます。現時点では複数人での同時編集はできません、ご了承下さい。
               <a class="note-link-line" href="https://note.com/tender_curlew476" target="_blank" rel="noopener noreferrer">アプリの詳細な説明（note）</a>
             </div>
           </details>
@@ -467,6 +479,7 @@
     const timelineBaseYear = ['内科','内科','内科','内科','内科','内科','小児','小児','小児','救急','救急','救急'];
     const timelineEmptyFmYear = Array(12).fill('なし');
     const timelineYear = value => Array(12).fill(value);
+    const timelineHalfYear = (first, second) => [...Array(6).fill(first), ...Array(6).fill(second)];
     const timelinePatterns = {
       pattern1: {
         label:'パターン1：総合診療3年＋家庭医療2年　並行研修なし',
@@ -475,8 +488,8 @@
           timelineBaseYear,
           timelineYear('総診I'),
           timelineYear('総診II'),
-          timelineYear('家庭医療I'),
-          timelineYear('家庭医療II')
+          timelineHalfYear('家庭医療II', '家庭医療I'),
+          timelineYear('家庭医療I')
         ],
         fmRows:[
           timelineEmptyFmYear,
@@ -498,7 +511,7 @@
         fmRows:[
           timelineEmptyFmYear,
           timelineEmptyFmYear,
-          timelineYear('家庭医療II'),
+          timelineHalfYear('家庭医療II', '家庭医療I'),
           timelineEmptyFmYear
         ]
       },
@@ -514,7 +527,7 @@
         fmRows:[
           timelineEmptyFmYear,
           timelineEmptyFmYear,
-          timelineYear('家庭医療II'),
+          timelineHalfYear('家庭医療II', '家庭医療I'),
           timelineEmptyFmYear
         ]
       },
@@ -976,8 +989,10 @@
     }
 
     function rotationClass(value) {
-      if (value === '総診I' || value === '総診II') return 'rot-gp';
-      if (value === '家庭医療I' || value === '家庭医療II') return 'rot-fm';
+      if (value === '総診I') return 'rot-gp';
+      if (value === '総診II') return 'rot-gp2';
+      if (value === '家庭医療I') return 'rot-fm';
+      if (value === '家庭医療II') return 'rot-fm2';
       if (value === '内科') return 'rot-naika';
       if (value === '小児') return 'rot-peds';
       if (value === '救急') return 'rot-em';
@@ -1162,15 +1177,15 @@
       const fmActive = hasFamilyTrainingInTimeline(state.timeline);
       const items = [
         { label:'総合診療（<a class="timeline-link" href="https://jbgm.org/menu/%E5%B0%82%E9%96%80%E7%A0%94%E4%BF%AE%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0/#sec_0139334271518012023" target="_blank" rel="noopener noreferrer">リンク</a>）', value:`${gpTotal}ヶ月 / 18ヶ月`, required:18, count:gpTotal, major:true },
-        { label:'総診Ⅰ（外来、在宅中心）', value:`${counts['総診I']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診I'] },
-        { label:'総診Ⅱ（病棟、救急中心）', value:`${counts['総診II']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診II'] },
+        { label:'総診Ⅰ<span class="timeline-label-note">外来、在宅中心</span>', value:`${counts['総診I']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診I'] },
+        { label:'総診Ⅱ<span class="timeline-label-note">病棟、救急中心</span>', value:`${counts['総診II']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診II'] },
         { label:'内科', value:`${counts['内科']}ヶ月 / 6ヶ月`, required:6, count:counts['内科'] },
         { label:'小児', value:`${counts['小児']}ヶ月 / 3ヶ月`, required:3, count:counts['小児'] },
         { label:'救急', value:`${counts['救急']}ヶ月 / 3ヶ月`, required:3, count:counts['救急'] },
         { label:'選択', value:`${counts['選択']}ヶ月`, required:0, count:counts['選択'] },
         { label:'家庭医療（<a class="timeline-link" href="https://shin-kateiiryo.primary-care.or.jp/strategy" target="_blank" rel="noopener noreferrer">リンク</a>）', value:fmActive ? `${fmTotal}ヶ月 / 24ヶ月` : '対象外', required:fmActive ? 24 : 0, count:fmTotal, major:true, fm:true },
-        { label:'家庭医療Ⅰ（診療所、小病院）', value:fmActive ? `${fmCounts['家庭医療I']}ヶ月 / 18ヶ月` : '対象外', required:fmActive ? 18 : 0, count:fmCounts['家庭医療I'], fm:true },
-        { label:'家庭医療Ⅱ（病院中心）', value:fmActive ? `${fmCounts['家庭医療II']}ヶ月 / 6ヶ月` : '対象外', required:fmActive ? 6 : 0, count:fmCounts['家庭医療II'], fm:true },
+        { label:'家庭医療Ⅰ<span class="timeline-label-note">診療所、小病院</span>', value:fmActive ? `${fmCounts['家庭医療I']}ヶ月 / 18ヶ月` : '対象外', required:fmActive ? 18 : 0, count:fmCounts['家庭医療I'], fm:true },
+        { label:'家庭医療Ⅱ<span class="timeline-label-note">病院中心</span>', value:fmActive ? `${fmCounts['家庭医療II']}ヶ月 / 6ヶ月` : '対象外', required:fmActive ? 6 : 0, count:fmCounts['家庭医療II'], fm:true },
         { label:'未定', value:`${counts['未定']}ヶ月`, required:0, count:counts['未定'], undecided:true }
       ];
       wrap.innerHTML = items.map(item => {
@@ -1282,7 +1297,7 @@
         items.push(reminder('登録管理料・システム使用料（研修開始3か月以内）', 'gp', { checkKey:'systemFee', done:Boolean(state.initialTasks.systemFee) }));
       }
       const naikaRemaining = cell.main === '内科' ? remainingCurrentNaikaMonths(index) : Infinity;
-      if (cell.main === '内科' && naikaRemaining <= 1) {
+      if (cell.main === '内科' && naikaRemaining <= 3) {
         const caseCounter = state.counters.case_gp || {};
         const summaryCounter = state.counters.summary_gp || {};
         if (Number(caseCounter.done || 0) < Number(caseCounter.total || 0)) items.push(reminder('J-OSLER 症例登録（内科研修中を推奨）', 'gp'));
@@ -1646,7 +1661,8 @@
       const donePct = total ? Math.max(0, Math.min(100, done / total * 100)) : 0;
       const el = document.getElementById(id);
       el.className = `memo-box summary-card ${variant === 'fm' ? 'summary-card-fm' : 'summary-card-gp'}`;
-      el.innerHTML = `<div class="summary-card-title">${title}</div><div class="ratio-bar"><span class="ratio-bar-done" style="flex:${donePct};"></span><span class="ratio-bar-remain" style="flex:${Math.max(100 - donePct, remain ? 8 : 0)}; min-width:${remain ? 8 : 0}px;"></span></div><div class="${remain ? 'metric-line pending' : 'metric-line'}" style="margin-top:8px;">達成 ${done} / 残 ${remain} / 全 ${total}</div>${note || ''}`;
+      const remainText = remain ? `<span class="metric-alert">未 ${remain}</span>` : '未 0';
+      el.innerHTML = `<div class="summary-card-title">${title}</div><div class="ratio-bar"><span class="ratio-bar-done" style="flex:${donePct};"></span><span class="ratio-bar-remain" style="flex:${Math.max(100 - donePct, remain ? 8 : 0)}; min-width:${remain ? 8 : 0}px;"></span></div><div class="metric-line" style="margin-top:8px;">${remainText} / 達成 ${done} / 全 ${total}</div>${note || ''}`;
     }
 
     function graphTargetOut(id, title, variant = 'fm') {
@@ -1657,7 +1673,8 @@
 
     function doneText(done, total, label) {
       const remain = Math.max(Number(total || 0) - Number(done || 0), 0);
-      return `<span class="metric-line">${label} ${done}/${total}${remain ? ` <span class="metric-alert">残${remain}</span>` : ''}</span>`;
+      const donePart = remain ? `<span class="metric-alert">${done}</span>` : done;
+      return `<span class="metric-line">${label} ${donePart}/${total}</span>`;
     }
 
     function chipDone(key, setName) {
