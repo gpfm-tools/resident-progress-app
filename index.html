@@ -7,6 +7,14 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-180.png" />
   <link rel="manifest" href="./manifest.webmanifest" />
+  <meta property="og:title" content="総合診療・家庭医療 専攻医 進捗管理アプリ" />
+  <meta property="og:description" content="総合診療・家庭医療専門研修の進捗管理を補助する、個人制作の非公式アプリです。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="総合診療・家庭医療 進捗管理アプリ" />
+  <meta property="og:image" content="./ogp.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <title>総合診療・家庭医療 進捗管理アプリ v1.0.0</title>
   <style>
     :root {
@@ -25,13 +33,19 @@
     .app-meta { margin-top:8px; font-size:.74rem; color:var(--muted); line-height:1.7; }
     .app-meta div { margin:2px 0; }
     .app-meta p { margin:6px 0; }
-    .app-meta .usage-overview { margin-top:14px; }
+    .app-meta .usage-overview { margin-top:10px; }
     .app-meta .usage-overview summary { cursor:pointer; display:inline-flex; align-items:center; gap:5px; color:#475569; font-weight:400; list-style:none; }
     .app-meta .usage-overview summary::-webkit-details-marker { display:none; }
     .app-meta .usage-overview summary::before { content:'>'; color:var(--muted); font-size:.72rem; transition:transform .15s ease; }
     .app-meta .usage-overview[open] summary::before { transform:rotate(90deg); }
     .app-meta .usage-body { margin-top:6px; line-height:1.75; }
-    .app-meta .note-link-line { display:block; margin:2px 0 4px; padding-left:1em; font-weight:400; }
+    .app-meta .usage-indent { padding-left:1em; }
+    .usage-steps { display:grid; grid-template-columns:4.2em 1.5em minmax(0,1fr); column-gap:0; row-gap:2px; align-items:start; }
+    .usage-steps .usage-label { white-space:nowrap; }
+    .usage-steps .usage-step { text-align:left; white-space:nowrap; }
+    .usage-note { margin-top:12px; }
+    .app-meta .feedback-link { margin-top:10px; padding-left:1em; }
+    .app-meta .note-link-line { display:block; margin:2px 0 4px; font-weight:400; }
     .app-meta a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
     .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
     .card-head { padding:12px 14px 0; font-weight:700; font-size:.92rem; }
@@ -54,6 +68,8 @@
     .naika-checks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 8px; font-size:.73rem; font-weight:600; }
     .naika-checks label { display:flex; align-items:center; gap:4px; }
     .btn { appearance:none; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; }
+    #save-history-btn { background:var(--blue-strong); border-color:var(--blue-strong); color:#fff; box-shadow:0 4px 12px rgba(24,100,200,.18); }
+    #copy-summary-btn { background:#fff; border-color:#cbd5e1; color:#1f2937; box-shadow:0 2px 6px rgba(15,23,42,.04); }
     .timeline-card { margin:0 0 8px; box-shadow:none; }
     #timeline-card > summary.card-head { background:#f8fafc !important; color:#64748b !important; font-size:.86rem; font-weight:600; border-bottom:1px solid #edf2f7; box-shadow:none; }
     .timeline-settings { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
@@ -114,6 +130,14 @@
     .gp-cell { background:var(--blue-verysoft); width:72px; min-width:72px; }
     .fm-cell { background:var(--orange-verysoft); width:72px; min-width:72px; }
     .section-row td { background:#f8fafc !important; color:#475569; font-weight:800; font-size:.74rem; border-top:2px solid var(--line-strong); }
+    .progress-section-row > td { padding:0; background:#f8fafc !important; }
+    .progress-section-row details { border:0; border-radius:0; background:transparent; padding:0; }
+    .progress-section-row summary { cursor:pointer; list-style:none; font-weight:800; color:#475569; padding:7px 8px; border-top:2px solid var(--line-strong); border-bottom:1px solid var(--line); }
+    .progress-section-row summary::-webkit-details-marker { display:none; }
+    .progress-section-row summary::before { content:'>'; margin-right:6px; color:var(--muted); }
+    .progress-section-row details[open] > summary::before { content:'v'; }
+    .progress-section-row table { width:100%; min-width:0; }
+    .progress-section-row table td { border-bottom:1px solid var(--line); }
     .row-title { display:flex; align-items:flex-start; justify-content:space-between; gap:6px; margin-bottom:3px; }
     .row-title strong { font-size:.76rem; }
     .cell-top { display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:2px; min-height:16px; }
@@ -149,7 +173,7 @@
     .link-item a, #free-link-editor a, #free-memo-editor a { color:#1d4ed8; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
     #free-link-editor, #free-memo-editor { overflow-wrap:anywhere; word-break:break-word; }
     .placeholder-box { min-height:56px; border:1px dashed var(--line); border-radius:10px; background:#fff; padding:10px; color:var(--muted); font-size:.78rem; }
-    .periodic-reminder-card { border-color:#d6dee8; border-left:5px solid #d9a441; background:#fff; box-shadow:0 8px 22px rgba(15,23,42,.09); }
+    .periodic-reminder-card { border-color:#e3e8ef; border-left:4px solid #ecd08c; background:#fff; box-shadow:0 5px 14px rgba(15,23,42,.05); }
     .global-reminder-card { margin:8px 0 8px; }
     .periodic-reminder-body { display:grid; gap:8px; }
     .reminder-headline { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:.86rem; font-weight:800; color:#334155; }
@@ -184,6 +208,15 @@
     .task-map-table details[open] summary::before { content:'v'; }
     .task-map-table .gp-task details { background:var(--blue-verysoft); border-color:#d9eaff; }
     .task-map-table .fm-task details { background:var(--orange-verysoft); border-color:#fde1d0; }
+    .task-map-section-row > td > details { border:0; border-radius:0; background:transparent; padding:0; }
+    .task-map-section-row > td > details > summary { cursor:pointer; list-style:none; font-weight:800; color:#475569; }
+    .task-map-section-row > td > details > summary::-webkit-details-marker { display:none; }
+    .task-map-section-row > td > details > summary::before { content:'>'; margin-right:6px; color:var(--muted); }
+    .task-map-section-row > td > details[open] > summary::before { content:'v'; }
+    .task-map-section-row td { padding:0; }
+    .task-map-section-title { padding:7px 8px; background:#f8fafc; border-top:2px solid var(--line-strong); border-bottom:1px solid var(--line); }
+    .task-map-section-body table { min-width:0; width:100%; }
+    .task-map-section-body td { border-bottom:1px solid var(--line); }
     .task-detail { margin-top:6px; font-size:.72rem; line-height:1.5; color:#475569; }
     .task-detail ul { margin:0; padding-left:1.15em; }
     .na-text-only { color:#9aa6b2; font-size:.68rem; font-weight:800; }
@@ -269,21 +302,27 @@
         <h1>総合診療・家庭医療 専攻医 進捗管理アプリ</h1>
         <div class="app-meta">
           <div>v1.0.0 ｜ 公開日 2026-07-11 ｜ 最終更新日 2026-07-11</div>
-          <p>このアプリは、総合診療・家庭医療専門研修の進捗管理を補助する目的で作成された、個人制作の非公式アプリです。制度更新のタイムラグやミスの可能性もありますので、各自で公式情報を確認することをおすすめします。</p>
-          <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMHqx18xFb6KatqZPTWbNUOii5TFWiM_OTG0bwy6B1DNc-ZQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">感想・不具合報告・改善要望はこちらから（Googleフォーム）</a></p>
+          <details class="usage-overview">
+            <summary>このアプリについて</summary>
+            <div class="usage-body usage-indent">
+              このアプリは、総合診療・家庭医療専門研修の進捗管理を補助する目的で作成された、個人制作の非公式アプリです。制度更新のタイムラグやミスの可能性もありますので、各自で公式情報を確認することをおすすめします。
+            </div>
+          </details>
           <details class="usage-overview">
             <summary>操作方法の概要</summary>
-            <div class="usage-body">
-              　全体像：①研修タイムラインを最初に入力してください<br>
-              　入力欄：②設定をプログラムの状況に合わせて入力してください<br>
-              　　　　　③定期タスクのリマインドを参考に、達成状況を適宜入力してください<br>
-              　　　　　④「履歴に保存」を押してください<br>
-              　履歴欄：⑤履歴/集計欄に記録されます<br>
-              <br>
-              　※注：記録は端末・ブラウザに自動保存されます。現時点では複数人での同時編集はできません、ご了承下さい。
+            <div class="usage-body usage-indent">
+              <div class="usage-steps">
+                <span class="usage-label">全体像：</span><span class="usage-step">①</span><span>研修タイムラインを最初に入力してください</span>
+                <span class="usage-label">入力欄：</span><span class="usage-step">②</span><span>設定をプログラムの状況に合わせて入力してください</span>
+                <span class="usage-label"></span><span class="usage-step">③</span><span>定期タスクのリマインドを参考に、達成状況を適宜入力してください</span>
+                <span class="usage-label"></span><span class="usage-step">④</span><span>「履歴に保存」を押してください</span>
+                <span class="usage-label">履歴欄：</span><span class="usage-step">⑤</span><span>履歴/集計欄に記録されます</span>
+              </div>
+              <div class="usage-note">※注：記録は端末・ブラウザに自動保存されます。現時点では複数人での同時編集はできません、ご了承下さい。</div>
               <a class="note-link-line" href="https://note.com/tender_curlew476" target="_blank" rel="noopener noreferrer">アプリの詳細な説明（note）</a>
             </div>
           </details>
+          <p class="feedback-link"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMHqx18xFb6KatqZPTWbNUOii5TFWiM_OTG0bwy6B1DNc-ZQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">感想・不具合・改善要望フォーム</a></p>
         </div>
       </div>
     </div>
@@ -294,8 +333,8 @@
 
     <nav class="top-tabs" aria-label="画面切り替え">
       <button class="nav-btn active" data-target="screen-home">全体像</button>
-      <button class="nav-btn" data-target="screen-input">入力欄</button>
-      <button class="nav-btn" data-target="screen-overview">履歴/集計欄</button>
+      <button class="nav-btn" data-target="screen-input">進捗入力</button>
+      <button class="nav-btn" data-target="screen-overview">履歴・集計</button>
     </nav>
 
     <section id="screen-home" class="screen active">
@@ -374,6 +413,7 @@
       <div class="input-layout">
         <div class="main-column">
           <section class="card">
+            <div class="card-head">総合診療・家庭医療タスクリスト</div>
             <div class="table-wrap">
               <table>
                 <thead><tr><th>項目</th><th class="gp-col-head">総合診療</th><th class="fm-col-head">家庭医療</th></tr></thead>
@@ -1483,10 +1523,15 @@
     function renderProgressTable() {
       ensureStateDefaults();
       const tbody = document.getElementById('progress-table-body');
-      tbody.innerHTML = sections.map(section => [
-        `<tr class="section-row"><td class="category-cell">${section.label}</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>`,
-        ...section.items.map(item => `<tr><td class="category-cell ${section.accent}"><div class="row-title"><strong>${item.title}</strong></div></td>${cellHtml(item, 'gp', section)}${cellHtml(item, 'fm', section)}</tr>`)
-      ].join('')).join('');
+      const openStates = {};
+      tbody.querySelectorAll('[data-progress-section]').forEach(details => {
+        openStates[details.dataset.progressSection] = details.open;
+      });
+      tbody.innerHTML = sections.map(section => {
+        const rows = section.items.map(item => `<tr><td class="category-cell ${section.accent}"><div class="row-title"><strong>${item.title}</strong></div></td>${cellHtml(item, 'gp', section)}${cellHtml(item, 'fm', section)}</tr>`).join('');
+        const openAttr = openStates[section.id] === false ? '' : ' open';
+        return `<tr class="progress-section-row"><td colspan="3"><details${openAttr} data-progress-section="${section.id}"><summary>${section.label}</summary><table><colgroup><col style="width:54px;"><col><col></colgroup><tbody>${rows}</tbody></table></details></td></tr>`;
+      }).join('');
     }
 
     function taskDetail(label, helpKey, mode) {
