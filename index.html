@@ -131,14 +131,6 @@
     .gp-cell { background:var(--blue-verysoft); width:72px; min-width:72px; }
     .fm-cell { background:var(--orange-verysoft); width:72px; min-width:72px; }
     .section-row td { background:#f8fafc !important; color:#475569; font-weight:800; font-size:.74rem; border-top:2px solid var(--line-strong); }
-    .progress-section-row > td { padding:0; background:#f8fafc !important; }
-    .progress-section-row details { border:0; border-radius:0; background:transparent; padding:0; }
-    .progress-section-row summary { cursor:pointer; list-style:none; font-weight:800; color:#475569; padding:7px 8px; border-top:2px solid var(--line-strong); border-bottom:1px solid var(--line); }
-    .progress-section-row summary::-webkit-details-marker { display:none; }
-    .progress-section-row summary::before { content:'>'; margin-right:6px; color:var(--muted); }
-    .progress-section-row details[open] > summary::before { content:'v'; }
-    .progress-section-row table { width:100%; min-width:0; }
-    .progress-section-row table td { border-bottom:1px solid var(--line); }
     .row-title { display:flex; align-items:flex-start; justify-content:space-between; gap:6px; margin-bottom:3px; }
     .row-title strong { font-size:.76rem; }
     .cell-top { display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:2px; min-height:16px; }
@@ -174,16 +166,31 @@
     .link-item a, #free-link-editor a, #free-memo-editor a { color:#1d4ed8; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
     #free-link-editor, #free-memo-editor { overflow-wrap:anywhere; word-break:break-word; }
     .placeholder-box { min-height:56px; border:1px dashed var(--line); border-radius:10px; background:#fff; padding:10px; color:var(--muted); font-size:.78rem; }
+    .memo-title-row { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:5px; }
+    .memo-title-row .memo-title { margin-bottom:0; }
+    .memo-title-note { color:var(--muted); font-size:.66rem; line-height:1.4; }
     .periodic-reminder-card { border-color:#e3e8ef; border-left:4px solid #ecd08c; background:#fff; box-shadow:0 5px 14px rgba(15,23,42,.05); }
-    .global-reminder-card { margin:8px 0 8px; }
+    .global-reminder-card { margin:8px 0 6px; }
+    .global-reminder-note { margin:0 0 22px 16px; }
     .periodic-reminder-body { display:grid; gap:8px; }
     .reminder-headline { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:.86rem; font-weight:800; color:#334155; }
     .current-location { color:#64748b; font-size:.78rem; font-weight:800; }
+    .debug-date-note { color:#64748b; font-size:.66rem; font-weight:700; }
+    .reminder-group { display:grid; gap:5px; }
+    .reminder-group-title { color:#64748b; font-size:.66rem; font-weight:700; }
+    .reminder-future-toggle { border:1px dashed #dbe3ee; border-radius:12px; background:#fcfdff; padding:6px 8px; }
+    .reminder-future-toggle summary { cursor:pointer; color:#64748b; font-size:.68rem; font-weight:700; }
+    .reminder-future-toggle .reminder-list { margin-top:6px; }
+    .reminder-future-note { color:#7c8795; font-size:.64rem; line-height:1.45; margin-top:6px; }
+    .reminder-more-note { color:#7c8795; font-size:.64rem; line-height:1.45; margin-top:5px; }
     .reminder-list { display:flex; flex-wrap:wrap; gap:6px; }
     .reminder-chip { display:inline-flex; align-items:center; gap:5px; border:1px solid #d6e6fb; border-radius:999px; background:#f3f8ff; color:#28537d; padding:5px 9px; font-size:.72rem; font-weight:800; line-height:1.25; }
     .reminder-chip.reminder-fm { border-color:#fde1d0; background:#fff7f0; color:#9a4a16; }
-    .reminder-chip.done span { text-decoration:line-through; color:#7c8795; }
+    .reminder-chip.reminder-urgent { box-shadow:inset 0 0 0 1px rgba(24,100,200,.18); }
     .reminder-check { width:13px; height:13px; margin:0; accent-color:#4f83b8; }
+    .reminder-link { color:#1d4ed8; text-decoration:underline; text-underline-offset:2px; }
+    .reminder-note { color:var(--muted); font-size:.66rem; line-height:1.5; }
+    .family-basis-setting-note { font-size:.74rem; }
     .reminder-empty { color:var(--muted); font-size:.78rem; }
     .overview-task-card { margin-top:8px; margin-bottom:18px; }
     .overview-timeline-card { margin-top:24px; margin-bottom:20px; }
@@ -195,6 +202,7 @@
     .backup-tools summary { cursor:pointer; font-size:.68rem; font-weight:600; color:#8a96a6; }
     .backup-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
     .backup-tools .btn { color:#64748b; font-size:.68rem; font-weight:600; padding:6px 9px; border-color:#e2e8f0; background:#fff; }
+    .backup-note { margin:7px 2px 0; color:#8a96a6; font-size:.62rem; line-height:1.45; }
     .summary-fallback { display:none; width:100%; min-height:150px; margin-top:8px; border:1px solid var(--line); border-radius:10px; padding:8px; font-size:.78rem; line-height:1.5; }
     .confirm-dialog { border:1px solid var(--line); border-radius:14px; padding:0; width:min(360px,calc(100vw - 32px)); box-shadow:0 18px 50px rgba(15,23,42,.22); }
     .confirm-dialog::backdrop { background:rgba(15,23,42,.22); }
@@ -234,10 +242,12 @@
     .desc-placeholder { color:var(--muted); font-size:.82rem; line-height:1.5; }
     .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); column-gap:14px; row-gap:6px; align-items:stretch; }
     .summary-grid.gp-only-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .summary-card { min-height:122px; height:100%; padding:12px; }
+    .summary-card { min-height:122px; height:100%; padding:12px; position:relative; overflow:hidden; }
     .summary-card-gp { background:#f7fbff; }
     .summary-card-fm { background:#fffaf6; }
     .summary-card-title { font-size:.9rem; font-weight:500; margin-bottom:6px; }
+    .completion-stamp { position:absolute; top:10px; right:10px; width:34px; height:34px; border:2px solid rgba(184,73,36,.46); border-radius:999px; color:rgba(184,73,36,.52); display:inline-flex; align-items:center; justify-content:center; font-size:1rem; font-weight:900; line-height:1; transform:rotate(-13deg); pointer-events:none; background:rgba(255,255,255,.04); animation:stampFade .18s ease-out; }
+    @keyframes stampFade { from { opacity:0; transform:rotate(-13deg) scale(.92); } to { opacity:1; transform:rotate(-13deg) scale(1); } }
     .ratio-bar { display:flex; height:10px; overflow:hidden; border-radius:999px; background:#edf1f7; margin-top:6px; position:relative; }
     .ratio-bar-done { background:#198754; }
     .ratio-bar-remain { background:#cfd6df; }
@@ -316,10 +326,10 @@
                 <span class="usage-label">全体像：</span><span class="usage-step">①</span><span>研修タイムラインを最初に入力してください</span>
                 <span class="usage-label">入力欄：</span><span class="usage-step">②</span><span>設定をプログラムの状況に合わせて入力してください</span>
                 <span class="usage-label"></span><span class="usage-step">③</span><span>定期タスクのリマインドを参考に、達成状況を適宜入力してください</span>
-                <span class="usage-label"></span><span class="usage-step">④</span><span>「履歴に保存」を押してください</span>
+                <span class="usage-label"></span><span class="usage-step">④</span><span>「履歴・集計欄へ記録」を押してください</span>
                 <span class="usage-label">履歴欄：</span><span class="usage-step">⑤</span><span>履歴/集計欄に記録されます</span>
               </div>
-              <div class="usage-note">※注：記録は端末・ブラウザに自動保存されます。現時点では複数人での同時編集はできません、ご了承下さい。</div>
+              <div class="usage-note">※注：記録は端末・ブラウザに自動保存されます。現時点では複数人での同時編集はできません、ご了承ください。</div>
               <a class="note-link-line" href="https://note.com/tender_curlew476" target="_blank" rel="noopener noreferrer">アプリの詳細な説明（note）</a>
             </div>
           </details>
@@ -331,6 +341,7 @@
     <section class="card periodic-reminder-card global-reminder-card">
       <div class="card-body periodic-reminder-body"></div>
     </section>
+    <div class="global-reminder-note reminder-note">リマインドは、研修タイムラインと進捗状況に基づく確認補助です。公式締切・修了要件を保証するものではありません。</div>
 
     <nav class="top-tabs" aria-label="画面切り替え">
       <button class="nav-btn active" data-target="screen-home">全体像</button>
@@ -372,6 +383,7 @@
           </div>
           <div id="timeline-grid-wrap" class="timeline-wrap"></div>
           <div id="timeline-summary" class="timeline-summary"></div>
+          <p class="timeline-note">※このタイムライン設定は、リマインド表示やタスクの設定に使用されます。実際の研修ローテーションと異なる場合、リマインドが正しく出ないことがあります。</p>
         </div>
       </details>
 
@@ -403,10 +415,11 @@
           <summary class="card-head">設定</summary>
           <div class="card-body">
             <div class="top-grid">
-              <div class="field"><div class="field-label"><span>Mini-CEX 年間必要数</span><button class="help-btn" data-help="minicex" type="button">?</button></div><div class="field-value">総診 <select id="req-minicex-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select> / 家庭医療 2</div></div>
-              <div class="field"><div class="field-label"><span>360度評価 年間必要数</span><button class="help-btn" data-help="eval360" type="button">?</button></div><div class="field-value">総診 <select id="req-360-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select> / 家庭医療 2</div></div>
-              <div class="field"><div class="field-label"><span>CbD 年間必要数</span><button class="help-btn" data-help="cbd" type="button">?</button></div><div class="field-value">総診 <select id="req-cbd-gp" style="display:inline-block; width:56px;"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> / 家庭医療 4</div></div>
+              <div class="field"><div class="field-label"><span>Mini-CEX 総診：研修全体の目安回数</span><button class="help-btn" data-help="minicex" type="button">?</button></div><div class="field-value">総診 <select id="req-minicex-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select></div></div>
+              <div class="field"><div class="field-label"><span>360度評価 総診：研修全体の目安回数</span><button class="help-btn" data-help="eval360" type="button">?</button></div><div class="field-value">総診 <select id="req-360-gp" style="display:inline-block; width:56px;"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select></div></div>
+              <div class="field"><div class="field-label"><span>CbD 総診：研修全体の目安回数</span><button class="help-btn" data-help="cbd" type="button">?</button></div><div class="field-value">総診 <select id="req-cbd-gp" style="display:inline-block; width:56px;"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div></div>
             </div>
+            <p id="family-basis-setting-note" class="reminder-note family-basis-setting-note" style="margin:8px 0 0;"></p>
           </div>
         </details>
       </div>
@@ -426,7 +439,7 @@
                 <div id="save-status" class="tag tag-help-gp" style="font-size:.7rem;">未保存</div>
                 <div class="save-action-stack">
                   <div class="save-actions">
-                    <button id="save-history-btn" class="btn">履歴に保存</button>
+                    <button id="save-history-btn" class="btn">履歴・集計欄へ記録</button>
                     <button id="copy-summary-btn" class="btn">サマリーをコピー</button>
                   </div>
                   <details class="backup-tools">
@@ -436,6 +449,7 @@
                       <button id="import-json-btn" class="btn">読込（JSON）</button>
                       <input id="import-json-input" type="file" accept="application/json,.json" style="display:none;" />
                     </div>
+                    <div class="backup-note">このアプリの記録は、この端末・このブラウザ内に保存されます。別端末に移す場合や大きな更新前には、JSONを書き出してください。</div>
                   </details>
                 </div>
               </div>
@@ -452,8 +466,11 @@
         </aside>
       </div>
       <section class="memo-box" style="margin-top:8px;">
-        <div class="memo-title">自由メモ</div>
-        <div id="free-memo-editor" contenteditable="true" style="border:1px solid var(--line); border-radius:8px; min-height:72px; padding:8px; background:#fff; font-size:.74rem; line-height:1.5;">面談メモ、注意点、次回確認したいこと、役立つリンクをここに自由記載。</div>
+        <div class="memo-title-row">
+          <div class="memo-title">自由メモ</div>
+          <div class="memo-title-note">患者氏名・IDなどの個人情報は入力しないでください。</div>
+        </div>
+        <div id="free-memo-editor" contenteditable="true" style="border:1px solid var(--line); border-radius:8px; min-height:72px; padding:8px; background:#fff; font-size:.74rem; line-height:1.5;">面談メモ、注意点、次回確認したいこと、役立つリンクをここに自由記載できます。<br>患者氏名・IDなどの個人情報は入力しないでください。</div>
       </section>
     </section>
 
@@ -498,7 +515,7 @@
 
   <dialog id="history-save-dialog" class="confirm-dialog">
     <div class="confirm-dialog-body">
-      <div>入力欄の項目を、履歴/集計欄に保存しますか？</div>
+      <div id="confirm-dialog-message">入力欄の項目を、履歴/集計欄に保存しますか？</div>
       <div class="confirm-dialog-actions">
         <button id="history-save-no" class="btn" type="button">いいえ</button>
         <button id="history-save-yes" class="btn" type="button">はい</button>
@@ -511,7 +528,7 @@
     const HISTORY_KEY = 'residentProgressHistory.v1.0.0.index2';
     const HISTORY_LIMIT = 20;
     const OLD_DEFAULT_MEMO = '面談メモ、注意点、次回確認したいことをここに自由記載。';
-    const DEFAULT_MEMO = '面談メモ、注意点、次回確認したいこと、役立つリンクをここに自由記載。';
+    const DEFAULT_MEMO = '面談メモ、注意点、次回確認したいこと、役立つリンクをここに自由記載できます。<br>患者氏名・IDなどの個人情報は入力しないでください。';
     const timelineRotations = ['総診I','総診II','内科','小児','救急','家庭医療I','家庭医療II','選択','未定'];
     const timelineMainOptions = ['総診I','総診II','内科','小児','救急','家庭医療I','家庭医療II','選択','未定'];
     const timelineFmOptions = ['なし','家庭医療I','家庭医療II'];
@@ -1217,17 +1234,17 @@
       const fmTotal = fmCounts['家庭医療I'] + fmCounts['家庭医療II'];
       const fmActive = hasFamilyTrainingInTimeline(state.timeline);
       const items = [
-        { label:'総合診療（<a class="timeline-link" href="https://jbgm.org/menu/%E5%B0%82%E9%96%80%E7%A0%94%E4%BF%AE%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0/#sec_0139334271518012023" target="_blank" rel="noopener noreferrer">リンク</a>）', value:`${gpTotal}ヶ月 / 18ヶ月`, required:18, count:gpTotal, major:true },
-        { label:'総診Ⅰ<span class="timeline-label-note">外来、在宅中心</span>', value:`${counts['総診I']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診I'] },
-        { label:'総診Ⅱ<span class="timeline-label-note">病棟、救急中心</span>', value:`${counts['総診II']}ヶ月 / 6ヶ月以上`, required:6, count:counts['総診II'] },
-        { label:'内科', value:`${counts['内科']}ヶ月 / 6ヶ月`, required:6, count:counts['内科'] },
-        { label:'小児', value:`${counts['小児']}ヶ月 / 3ヶ月`, required:3, count:counts['小児'] },
-        { label:'救急', value:`${counts['救急']}ヶ月 / 3ヶ月`, required:3, count:counts['救急'] },
-        { label:'選択', value:`${counts['選択']}ヶ月`, required:0, count:counts['選択'] },
-        { label:'家庭医療（<a class="timeline-link" href="https://shin-kateiiryo.primary-care.or.jp/strategy" target="_blank" rel="noopener noreferrer">リンク</a>）', value:fmActive ? `${fmTotal}ヶ月 / 24ヶ月` : '対象外', required:fmActive ? 24 : 0, count:fmTotal, major:true, fm:true },
-        { label:'家庭医療Ⅰ<span class="timeline-label-note">診療所、小病院</span>', value:fmActive ? `${fmCounts['家庭医療I']}ヶ月 / 18ヶ月` : '対象外', required:fmActive ? 18 : 0, count:fmCounts['家庭医療I'], fm:true },
-        { label:'家庭医療Ⅱ<span class="timeline-label-note">病院中心</span>', value:fmActive ? `${fmCounts['家庭医療II']}ヶ月 / 6ヶ月` : '対象外', required:fmActive ? 6 : 0, count:fmCounts['家庭医療II'], fm:true },
-        { label:'未定', value:`${counts['未定']}ヶ月`, required:0, count:counts['未定'], undecided:true }
+        { label:'総合診療（<a class="timeline-link" href="https://jbgm.org/menu/%E5%B0%82%E9%96%80%E7%A0%94%E4%BF%AE%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0/#sec_0139334271518012023" target="_blank" rel="noopener noreferrer">リンク</a>）', value:`${gpTotal}か月 / 18か月`, required:18, count:gpTotal, major:true },
+        { label:'総診Ⅰ<span class="timeline-label-note">外来、在宅中心</span>', value:`${counts['総診I']}か月 / 6か月以上`, required:6, count:counts['総診I'] },
+        { label:'総診Ⅱ<span class="timeline-label-note">病棟、救急中心</span>', value:`${counts['総診II']}か月 / 6か月以上`, required:6, count:counts['総診II'] },
+        { label:'内科', value:`${counts['内科']}か月 / 6か月`, required:6, count:counts['内科'] },
+        { label:'小児', value:`${counts['小児']}か月 / 3か月`, required:3, count:counts['小児'] },
+        { label:'救急', value:`${counts['救急']}か月 / 3か月`, required:3, count:counts['救急'] },
+        { label:'選択', value:`${counts['選択']}か月`, required:0, count:counts['選択'] },
+        { label:'家庭医療（<a class="timeline-link" href="https://shin-kateiiryo.primary-care.or.jp/strategy" target="_blank" rel="noopener noreferrer">リンク</a>）', value:fmActive ? `${fmTotal}か月 / 24か月` : '対象外', required:fmActive ? 24 : 0, count:fmTotal, major:true, fm:true },
+        { label:'家庭医療Ⅰ<span class="timeline-label-note">診療所、小病院</span>', value:fmActive ? `${fmCounts['家庭医療I']}か月 / 18か月` : '対象外', required:fmActive ? 18 : 0, count:fmCounts['家庭医療I'], fm:true },
+        { label:'家庭医療Ⅱ<span class="timeline-label-note">病院中心</span>', value:fmActive ? `${fmCounts['家庭医療II']}か月 / 6か月` : '対象外', required:fmActive ? 6 : 0, count:fmCounts['家庭医療II'], fm:true },
+        { label:'未定', value:`${counts['未定']}か月`, required:0, count:counts['未定'], undecided:true }
       ];
       wrap.innerHTML = items.map(item => {
         const attention = item.required && item.count < item.required ? ' attention' : '';
@@ -1243,6 +1260,19 @@
       renderTimelineControls();
       renderTimelineGrid();
       renderTimelineSummary();
+    }
+
+    function debugDateInfo() {
+      const raw = new URLSearchParams(window.location.search).get('debugDate');
+      if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+      const [year, month, day] = raw.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+      return { date, text:raw };
+    }
+
+    function reminderCurrentDate() {
+      return debugDateInfo()?.date || new Date();
     }
 
     function currentTimelineLocation(currentDate = new Date()) {
@@ -1299,21 +1329,135 @@
       return new Date(Number(state.timeline.startYear || 2026), Number(state.timeline.startMonth || 4) - 1, 1);
     }
 
-    function isWithinFirstThreeMonths(currentDate) {
-      const start = trainingStartDate();
-      const end = new Date(start);
-      end.setMonth(end.getMonth() + 3);
-      return currentDate >= start && currentDate < end;
+    function timelineMonthIndexForDate(currentDate) {
+      const startYear = Number(state.timeline.startYear || 2026);
+      const startMonth = Number(state.timeline.startMonth || 4);
+      return (currentDate.getFullYear() - startYear) * 12 + (currentDate.getMonth() + 1 - startMonth);
     }
 
-    function remainingCurrentNaikaMonths(index) {
-      let remaining = 0;
-      for (let i = index; i < state.timeline.cells.length; i += 1) {
-        const cell = normalizeTimelineCell(state.timeline.cells[i], i);
-        if (cell.main !== '内科') break;
-        remaining += 1;
+    function timelineDateAtIndex(index) {
+      const date = trainingStartDate();
+      date.setMonth(date.getMonth() + index);
+      return { year:date.getFullYear(), month:date.getMonth() + 1 };
+    }
+
+    function timelineMonthDeadline(index) {
+      const date = timelineDateAtIndex(index);
+      return `${date.year}年${date.month}月末まで`;
+    }
+
+    function timelinePeriodDeadline(index) {
+      const date = timelineDateAtIndex(index);
+      return periodDeadline(date.year, date.month);
+    }
+
+    function isFamilyMedicineCell(cell) {
+      return ['家庭医療I','家庭医療II'].includes(cell.main) || ['家庭医療I','家庭医療II'].includes(cell.fm);
+    }
+
+    function isGpBasisCell(cell) {
+      return ['内科','小児','小児科','救急','救急科','総診I','総診II','選択'].includes(cell.main);
+    }
+
+    function timelineIndicesMatching(predicate, timeline = state.timeline) {
+      const cells = Array.isArray(timeline?.cells) ? timeline.cells : [];
+      return cells.reduce((indices, value, index) => {
+        const cell = normalizeTimelineCell(value, index);
+        if (predicate(cell, index)) indices.push(index);
+        return indices;
+      }, []);
+    }
+
+    function familyMedicineMonthCount(timeline = state.timeline) {
+      return timelineIndicesMatching(isFamilyMedicineCell, timeline).length;
+    }
+
+    function familyBasisRequiredCounts(timeline = state.timeline) {
+      const months = familyMedicineMonthCount(timeline);
+      return {
+        minicex:Math.floor(months / 6),
+        eval360:Math.floor(months / 6),
+        cbd:Math.floor(months / 3)
+      };
+    }
+
+    function renderFamilyBasisSettingNote() {
+      const note = document.getElementById('family-basis-setting-note');
+      if (!note) return;
+      const months = familyMedicineMonthCount();
+      if (!months) {
+        note.hidden = true;
+        note.innerHTML = '';
+        return;
       }
-      return remaining;
+      const counts = familyBasisRequiredCounts();
+      note.hidden = false;
+      note.innerHTML = `家庭医療側の目安回数：Mini-CEX ${counts.minicex}回 / 360度評価 ${counts.eval360}回 / CbD ${counts.cbd}回<br>※研修タイムライン上の家庭医療月数から自動計算されます。`;
+    }
+
+    function familyBasisRequiredForKey(key, timeline = state.timeline) {
+      const counts = familyBasisRequiredCounts(timeline);
+      if (key === 'minicex_fm') return counts.minicex;
+      if (key === 'eval360_fm') return counts.eval360;
+      if (key === 'cbd_fm') return counts.cbd;
+      return 0;
+    }
+
+    function familyBasisIntervalText(key) {
+      return key === 'cbd_fm' ? '3か月ごと' : '6か月ごと';
+    }
+
+    function naikaInputHalf(month) {
+      if (month >= 7 && month <= 9) return 'first';
+      if (month >= 1 && month <= 3) return 'second';
+      return '';
+    }
+
+    function collectNaikaTimelineInfo(currentDate = new Date()) {
+      ensureTimelineDefaults();
+      const currentIndex = timelineMonthIndexForDate(currentDate);
+      const totalMonths = Number(state.timeline.years || 4) * 12;
+      const indices = [];
+      state.timeline.cells.forEach((value, index) => {
+        if (normalizeTimelineCell(value, index).main === '内科') indices.push(index);
+      });
+      const firstIndex = indices.length ? indices[0] : -1;
+      const lastIndex = indices.length ? indices[indices.length - 1] : -1;
+      const futureIndices = indices.filter(index => index >= Math.max(currentIndex, 0));
+      const upcomingInputPeriods = {};
+      const allInputPeriods = {};
+      indices.forEach(index => {
+        const date = timelineDateAtIndex(index);
+        const half = naikaInputHalf(date.month);
+        if (!half) return;
+        allInputPeriods[half] ??= { index, deadline:timelinePeriodDeadline(index) };
+        if (index > currentIndex) upcomingInputPeriods[half] ??= { index, deadline:timelinePeriodDeadline(index) };
+      });
+      const blocks = [];
+      indices.forEach(index => {
+        const lastBlock = blocks[blocks.length - 1];
+        if (lastBlock && index === lastBlock.end + 1) {
+          lastBlock.end = index;
+        } else {
+          blocks.push({ start:index, end:index });
+        }
+      });
+      return {
+        currentIndex,
+        totalMonths,
+        indices,
+        blocks,
+        firstIndex,
+        lastIndex,
+        currentNaika:indices.includes(currentIndex),
+        hasStarted:firstIndex >= 0 && currentIndex >= firstIndex,
+        allEnded:lastIndex >= 0 && currentIndex > lastIndex,
+        hasFutureNaika:futureIndices.length > 0,
+        remainingMonths:futureIndices.length,
+        currentHalf:indices.includes(currentIndex) ? naikaInputHalf(currentDate.getMonth() + 1) : '',
+        upcomingInputPeriods,
+        allInputPeriods
+      };
     }
 
     function lastTimelineYearIndex(predicate) {
@@ -1325,76 +1469,239 @@
       return last;
     }
 
+    function programEvaluationTiming(currentIndex, naikaInfo) {
+      const yearIndexes = [...new Set(naikaInfo.indices.map(index => Math.floor(index / 12)))];
+      let current = null;
+      let future = null;
+      let overdue = null;
+      yearIndexes.forEach(yearIdx => {
+        const start = yearIdx * 12 + 9;
+        const end = yearIdx * 12 + 11;
+        const deadline = timelinePeriodDeadline(end);
+        if (currentIndex > end) overdue = { deadline };
+        else if (currentIndex >= start && currentIndex <= end) current = { deadline };
+        else if (!future || start < future.index) future = { index:start, deadline };
+      });
+      if (overdue) return { group:'overdue', deadline:overdue.deadline };
+      if (current) return { group:'now', deadline:current.deadline };
+      if (future) return { group:'future', deadline:future.deadline, dueIndex:future.index };
+      return null;
+    }
+
+    function evenlySpacedMilestones(indices, count) {
+      const target = Number(count || 0);
+      if (!indices.length || target <= 0) return [];
+      return Array.from({ length:target }, (_, idx) => {
+        const pos = Math.min(indices.length - 1, Math.max(0, Math.ceil(indices.length * (idx + 1) / target) - 1));
+        return indices[pos];
+      });
+    }
+
+    function familyCumulativeMilestones(step) {
+      const indices = timelineIndicesMatching(isFamilyMedicineCell);
+      const count = Math.floor(indices.length / step);
+      return Array.from({ length:count }, (_, idx) => indices[(idx + 1) * step - 1]);
+    }
+
+    function addGpBasisReminders(add, currentIndex) {
+      const indices = timelineIndicesMatching(isGpBasisCell);
+      [
+        { label:'Mini-CEX', key:'minicex_gp', required:Number(state.settings.reqMinicexGp || 0), priority:58, futureCategory:'gp-minicex' },
+        { label:'360度評価', key:'eval360_gp', required:Number(state.settings.req360Gp || 0), priority:58, futureCategory:'gp-360' },
+        { label:'CbD', key:'cbd_gp', required:Number(state.settings.reqCbdGp || 0), priority:58, futureCategory:'gp-cbd' }
+      ].forEach(item => {
+        const milestones = evenlySpacedMilestones(indices, item.required);
+        const target = Number(state.chips[item.key] || 0) + 1;
+        const dueIndex = milestones[target - 1];
+        if (!Number.isFinite(dueIndex)) return;
+        const group = dueIndex < currentIndex ? 'overdue' : (dueIndex === currentIndex ? 'now' : 'future');
+        add(group, reminder(`${item.label} ${target}回目（${timelineMonthDeadline(dueIndex)}）`, 'gp', {
+          dueIndex,
+          priority:item.priority,
+          futureCategory:item.futureCategory
+        }));
+      });
+    }
+
+    function addFmBasisReminders(add, currentIndex) {
+      if (!hasFamilyTraining()) return;
+      [
+        { label:'Mini-CEX', key:'minicex_fm', milestones:familyCumulativeMilestones(6), priority:50, futureCategory:'fm-minicex' },
+        { label:'360度評価', key:'eval360_fm', milestones:familyCumulativeMilestones(6), priority:50, futureCategory:'fm-360' },
+        { label:'CbD', key:'cbd_fm', milestones:familyCumulativeMilestones(3), priority:50, futureCategory:'fm-cbd' }
+      ].forEach(item => {
+        const target = Number(state.chips[item.key] || 0) + 1;
+        const dueIndex = item.milestones[target - 1];
+        if (!Number.isFinite(dueIndex)) return;
+        const group = dueIndex < currentIndex ? 'overdue' : (dueIndex === currentIndex ? 'now' : 'future');
+        add(group, reminder(`${item.label} ${target}回目（${timelineMonthDeadline(dueIndex)}）`, 'fm', {
+          dueIndex,
+          priority:item.priority,
+          futureCategory:item.futureCategory
+        }));
+      });
+    }
+
+    function finalYearFutureReminder(currentIndex, yearIdx, type) {
+      if (yearIdx < 0) return null;
+      const start = yearIdx * 12 + 9;
+      const end = yearIdx * 12 + 11;
+      if (currentIndex >= start && currentIndex <= end) return null;
+      if (currentIndex >= end) return null;
+      const label = type === 'fm' ? '修了要件を確認ください（家庭医療）' : '修了要件を確認ください（総合診療）';
+      return reminder(label, type === 'fm' ? 'fm' : 'gp', { dueIndex:start, priority:75, futureCategory:`finish-${type}` });
+    }
+
+    function limitFutureReminders(items, currentIndex) {
+      const candidates = items
+        .filter(item => Number.isFinite(item.dueIndex))
+        .filter(item => item.dueIndex - currentIndex >= 0 && item.dueIndex - currentIndex <= 6)
+        .sort((a, b) => a.dueIndex - b.dueIndex || (b.priority || 0) - (a.priority || 0));
+      const byCategory = [];
+      const seen = new Set();
+      candidates.forEach(item => {
+        const category = item.futureCategory || item.text;
+        if (seen.has(category)) return;
+        seen.add(category);
+        byCategory.push(item);
+      });
+      const visible = byCategory
+        .slice()
+        .sort((a, b) => (b.priority || 0) - (a.priority || 0) || a.dueIndex - b.dueIndex)
+        .slice(0, 5)
+        .sort((a, b) => a.dueIndex - b.dueIndex || (b.priority || 0) - (a.priority || 0));
+      return { items:visible, truncated:byCategory.length > visible.length };
+    }
+
     function buildPeriodicReminders(currentDate = new Date()) {
       ensureStateDefaults();
       const loc = currentTimelineLocation(currentDate);
-      if (loc.status !== 'active') return { location:loc, items:[] };
-      const { year, month, cell, yearIdx, index } = loc;
-      const items = [];
-      const deadline = periodDeadline(year, month);
-      const isFmMonth = ['家庭医療I','家庭医療II'].includes(cell.main) || ['家庭医療I','家庭医療II'].includes(cell.fm);
-      if (isWithinFirstThreeMonths(currentDate)) {
-        items.push(reminder('研修開始届（研修開始3か月以内）', 'gp', { checkKey:'startNotice', done:Boolean(state.initialTasks.startNotice) }));
-        items.push(reminder('登録管理料・システム使用料（研修開始3か月以内）', 'gp', { checkKey:'systemFee', done:Boolean(state.initialTasks.systemFee) }));
+      const groups = { now:[], overdue:[], future:[] };
+      const add = (group, item) => {
+        if (!groups[group].some(existing => existing.text === item.text && existing.type === item.type && existing.checkKey === item.checkKey)) groups[group].push(item);
+      };
+      const naikaInfo = collectNaikaTimelineInfo(currentDate);
+      const nowTime = currentDate.getTime();
+      const startDate = trainingStartDate();
+      const startLimit = new Date(startDate);
+      startLimit.setMonth(startLimit.getMonth() + 3);
+      const initialGroup = nowTime < startDate.getTime() ? 'future' : (nowTime < startLimit.getTime() ? 'now' : 'overdue');
+      if (!state.initialTasks.startNotice) {
+        add(initialGroup, reminder('研修開始届（研修開始から3か月以内）', 'gp', {
+          checkKey:'startNotice',
+          link:'https://jbgm.org/menu/%E7%A0%94%E4%BF%AE%E3%81%AE%E6%B5%81%E3%82%8C-2/#sec_21858545271518012023',
+          dueIndex:0,
+          priority:90,
+          futureCategory:'initial-start-notice'
+        }));
       }
-      const naikaRemaining = cell.main === '内科' ? remainingCurrentNaikaMonths(index) : Infinity;
-      if (cell.main === '内科' && naikaRemaining <= 3) {
-        const caseCounter = state.counters.case_gp || {};
-        const summaryCounter = state.counters.summary_gp || {};
-        if (Number(caseCounter.done || 0) < Number(caseCounter.total || 0)) items.push(reminder('J-OSLER 症例登録（内科研修中を推奨）', 'gp'));
-        if (Number(summaryCounter.done || 0) < Number(summaryCounter.total || 0)) items.push(reminder('J-OSLER 病歴要約（内科研修中を推奨）', 'gp'));
+      if (!state.initialTasks.systemFee) {
+        add(initialGroup, reminder('登録管理料・システム使用料（研修開始から3か月以内）', 'gp', {
+          checkKey:'systemFee',
+          link:'https://jbgm.org/menu/%E7%A0%94%E4%BF%AE%E3%81%AE%E6%B5%81%E3%82%8C-2/#sec_31858545271518012023',
+          dueIndex:0,
+          priority:90,
+          futureCategory:'initial-system-fee'
+        }));
       }
-      if (cell.main === '内科' && ((month >= 7 && month <= 9) || (month >= 1 && month <= 3))) {
-        const half = month >= 7 && month <= 9 ? 'first' : 'second';
-        [
-          ['技術技能評価', 'skill_gp', 'gpApproval'],
-          ['自己評価', 'self_gp', 'gpInput'],
-          ['指導医評価', 'supervisor_gp', 'gpInput'],
-          ['多職種評価', 'multi_gp', 'gpRequest']
-        ].forEach(([label, key, setName]) => {
-          if (!chipComplete(`${key}_${half}`, setName)) items.push(reminder(`${label}（${deadline}）`, 'gp'));
+
+      const addCounterReminder = (counterKey, label) => {
+        const counter = state.counters[counterKey] || {};
+        if (!naikaInfo.indices.length || Number(counter.done || 0) >= Number(counter.total || 0)) return;
+        const group = naikaInfo.allEnded ? 'overdue' : (naikaInfo.hasStarted ? 'now' : 'future');
+        add(group, reminder(label, 'gp', {
+          urgent:group === 'now' && naikaInfo.remainingMonths <= 2,
+          dueIndex:naikaInfo.firstIndex,
+          priority:95,
+          futureCategory:counterKey
+        }));
+      };
+      addCounterReminder('case_gp', 'J-OSLER 症例登録（内科研修中を推奨）');
+      addCounterReminder('summary_gp', 'J-OSLER 病歴要約（内科研修中を推奨）');
+
+      const evalTasks = [
+        ['技術技能評価', 'skill_gp', 'gpApproval'],
+        ['研修評価：自己評価', 'self_gp', 'gpInput'],
+        ['研修評価：指導医評価', 'supervisor_gp', 'gpInput'],
+        ['多職種評価', 'multi_gp', 'gpRequest']
+      ];
+      const addEvalRemindersForHalf = (group, half, deadline, dueIndex = undefined) => {
+        evalTasks.forEach(([label, key, setName]) => {
+          if (!chipComplete(`${key}_${half}`, setName)) add(group, reminder(`${label}（${deadline}）`, 'gp', {
+            dueIndex,
+            priority:85,
+            futureCategory:`eval-${key}`
+          }));
+        });
+      };
+      if (naikaInfo.allEnded) {
+        Object.keys(naikaInfo.allInputPeriods).forEach(half => addEvalRemindersForHalf('overdue', half, naikaInfo.allInputPeriods[half].deadline));
+      } else {
+        if (naikaInfo.currentHalf) addEvalRemindersForHalf('now', naikaInfo.currentHalf, periodDeadline(currentDate.getFullYear(), currentDate.getMonth() + 1));
+        Object.keys(naikaInfo.upcomingInputPeriods).forEach(half => {
+          if (half !== naikaInfo.currentHalf) addEvalRemindersForHalf('future', half, naikaInfo.upcomingInputPeriods[half].deadline, naikaInfo.upcomingInputPeriods[half].index);
         });
       }
-      if (month >= 1 && month <= 3 && yearlyTimelineHasNaika(yearIdx) && !chipComplete('program_gp', 'gpInput')) {
-        items.push(reminder(`研修評価：プログラム評価（${year}年3月末まで）`, 'gp'));
+
+      if (!chipComplete('program_gp', 'gpInput')) {
+        const timing = programEvaluationTiming(naikaInfo.currentIndex, naikaInfo);
+        if (timing) add(timing.group, reminder(`研修評価：プログラム評価（${timing.deadline}に確認してください）`, 'gp', {
+          dueIndex:timing.dueIndex,
+          priority:80,
+          futureCategory:'program-evaluation'
+        }));
       }
-      if (isFmMonth && month >= 7 && month <= 9) {
-        if (Number(state.chips.minicex_fm || 0) < 1) items.push(reminder(`Mini-CEX 1回目（${deadline}）`, 'fm'));
-        if (Number(state.chips.eval360_fm || 0) < 1) items.push(reminder(`360度評価 1回目（${deadline}）`, 'fm'));
-        if (Number(state.chips.cbd_fm || 0) < 2) items.push(reminder(`CbD 2回目（${deadline}）`, 'fm'));
+
+      addGpBasisReminders(add, naikaInfo.currentIndex);
+      addFmBasisReminders(add, naikaInfo.currentIndex);
+
+      if (loc.status === 'active') {
+        const { year, month, cell, yearIdx } = loc;
+        if ((cell.main === '小児' || cell.main === '小児科') && !chipComplete('peds_gp', 'gpWrite')) add('now', reminder('小児科研修の記録（小児科研修中）', 'gp'));
+        if ((cell.main === '救急' || cell.main === '救急科') && !chipComplete('em_gp', 'gpWrite')) add('now', reminder('救急科研修の記録（救急科研修中）', 'gp'));
+        if (month >= 1 && month <= 3) {
+          if (!chipComplete('annual_gp', 'gpWrite')) add('now', reminder(`総合診療 1年毎の振り返り（${year}年3月末まで）`, 'gp'));
+          if (hasFamilyTraining() && !chipComplete('annual_fm', 'fmWrite')) add('now', reminder(`家庭医療 1年毎の振り返り（${year}年3月末まで）`, 'fm'));
+          const gpLastYear = lastTimelineYearIndex(c => ['総診I','総診II','内科','小児','小児科','救急','救急科'].includes(c.main));
+          if (gpLastYear >= 0 && yearIdx === gpLastYear) add('now', reminder('修了要件を確認ください（総合診療）', 'gp'));
+          const fmLastYear = lastTimelineYearIndex(c => ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.main) || ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.fm));
+          if (fmLastYear >= 0 && yearIdx === fmLastYear) add('now', reminder('修了要件を確認ください（家庭医療）', 'fm'));
+        }
+        const gpFutureFinish = finalYearFutureReminder(naikaInfo.currentIndex, lastTimelineYearIndex(c => ['総診I','総診II','内科','小児','小児科','救急','救急科'].includes(c.main)), 'gp');
+        if (gpFutureFinish) add('future', gpFutureFinish);
+        const fmFutureFinish = finalYearFutureReminder(naikaInfo.currentIndex, lastTimelineYearIndex(c => ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.main) || ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.fm)), 'fm');
+        if (fmFutureFinish) add('future', fmFutureFinish);
       }
-      if (isFmMonth && month >= 1 && month <= 3) {
-        if (Number(state.chips.minicex_fm || 0) < 2) items.push(reminder(`Mini-CEX 2回目（${year}年3月末まで）`, 'fm'));
-        if (Number(state.chips.eval360_fm || 0) < 2) items.push(reminder(`360度評価 2回目（${year}年3月末まで）`, 'fm'));
-        if (Number(state.chips.cbd_fm || 0) < 4) items.push(reminder(`CbD 4回目（${year}年3月末まで）`, 'fm'));
-      }
-      if (isFmMonth && month >= 4 && month <= 6 && Number(state.chips.cbd_fm || 0) < 1) items.push(reminder(`CbD 1回目（${deadline}）`, 'fm'));
-      if (isFmMonth && month >= 10 && month <= 12 && Number(state.chips.cbd_fm || 0) < 3) items.push(reminder(`CbD 3回目（${deadline}）`, 'fm'));
-      if ((cell.main === '小児' || cell.main === '小児科') && !chipComplete('peds_gp', 'gpWrite')) items.push(reminder('小児科研修の記録（小児科研修中）', 'gp'));
-      if ((cell.main === '救急' || cell.main === '救急科') && !chipComplete('em_gp', 'gpWrite')) items.push(reminder('救急科研修の記録（救急科研修中）', 'gp'));
-      if (month >= 1 && month <= 3) {
-        if (!chipComplete('annual_gp', 'gpWrite')) items.push(reminder(`総合診療 1年毎の振り返り（${year}年3月末まで）`, 'gp'));
-        if (hasFamilyTraining() && !chipComplete('annual_fm', 'fmWrite')) items.push(reminder(`家庭医療 1年毎の振り返り（${year}年3月末まで）`, 'fm'));
-        const gpLastYear = lastTimelineYearIndex(c => ['総診I','総診II','内科','小児','小児科','救急','救急科'].includes(c.main));
-        if (gpLastYear >= 0 && yearIdx === gpLastYear) items.push(reminder('修了要件を確認ください（総合診療）', 'gp'));
-        const fmLastYear = lastTimelineYearIndex(c => ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.main) || ['家庭医療I','家庭医療II','家庭医療カウント未区分'].includes(c.fm));
-        if (fmLastYear >= 0 && yearIdx === fmLastYear) items.push(reminder('修了要件を確認ください（家庭医療）', 'fm'));
-      }
-      return { location:loc, items };
+      const future = limitFutureReminders(groups.future, naikaInfo.currentIndex);
+      groups.future = future.items;
+      return { location:loc, groups, futureTruncated:future.truncated, items:[...groups.now, ...groups.overdue] };
     }
 
-    function renderPeriodicReminders(currentDate = new Date()) {
+    function renderPeriodicReminders(currentDate = reminderCurrentDate()) {
       const result = buildPeriodicReminders(currentDate);
-      const itemHtml = item => {
+      const debug = debugDateInfo();
+      const itemHtml = (item, extraClass = '') => {
         const type = item.type === 'fm' ? 'reminder-fm' : 'reminder-gp';
-        const done = item.done ? ' done' : '';
-        const checkbox = item.checkKey ? `<input class="reminder-check" type="checkbox" data-initial-task="${item.checkKey}" ${item.done ? 'checked' : ''}>` : '';
-        return `<label class="reminder-chip ${type}${done}">${checkbox}<span>${escapeHtml(item.text)}</span></label>`;
+        const checkbox = item.checkKey ? `<input class="reminder-check" type="checkbox" data-initial-task="${item.checkKey}">` : '';
+        const text = item.link
+          ? `<span>${escapeHtml(item.text)}（<a class="reminder-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">リンク</a>）</span>`
+          : `<span>${escapeHtml(item.text)}</span>`;
+        const urgent = item.urgent ? ' reminder-urgent' : '';
+        return `<div class="reminder-chip ${type}${urgent}${extraClass}">${checkbox}${text}</div>`;
       };
+      const groupHtml = (title, items, extraClass = '') => items.length
+        ? `<div class="reminder-group"><div class="reminder-group-title">${title}</div><div class="reminder-list">${items.map(item => itemHtml(item, extraClass)).join('')}</div></div>`
+        : '';
       document.querySelectorAll('.periodic-reminder-body').forEach(wrap => {
-        wrap.innerHTML = `<div class="reminder-headline">💡定期タスクのリマインド <span class="current-location">（${escapeHtml(result.location.text)}）</span></div>${
-          result.items.length
-            ? `<div class="reminder-list">${result.items.map(itemHtml).join('')}</div>`
+        const groups = result.groups || { now:result.items || [], overdue:[], future:[] };
+        const futureHtml = groups.future.length
+          ? `<details class="reminder-future-toggle"><summary>今後の確認（次に来る主なタスク）</summary><div class="reminder-future-note">ここには、直近半年を目安に、近い時期に確認した方がよい主な項目を最大5つまで表示しています。詳細はタスクリスト・公式情報・各プログラムの運用を確認してください。</div><div class="reminder-list">${groups.future.map(item => itemHtml(item)).join('')}</div>${result.futureTruncated ? '<div class="reminder-more-note">その他の将来タスクはタスクリスト・タイムラインで確認してください。</div>' : ''}</details>`
+          : '';
+        const hasAny = groups.now.length || groups.overdue.length || groups.future.length;
+        const debugHtml = debug ? '<span class="debug-date-note">デバッグ日付で表示中。通常利用ではURLの ?debugDate=... を削除してください。</span>' : '';
+        wrap.innerHTML = `<div class="reminder-headline">💡定期タスクのリマインド <span class="current-location">（${escapeHtml(result.location.text)}）</span>${debugHtml}</div>${
+          hasAny
+            ? `${groupHtml('直近のタスク', groups.now)}${groupHtml('目安期限後のタスク', groups.overdue)}${futureHtml}`
             : '<div class="reminder-empty">現在表示する定期タスクはありません。</div>'
         }`;
       });
@@ -1457,12 +1764,14 @@
       if (config.requiredFrom === 'req-minicex-gp') return Number(state.settings.reqMinicexGp || 0);
       if (config.requiredFrom === 'req-360-gp') return Number(state.settings.req360Gp || 0);
       if (config.requiredFrom === 'req-cbd-gp') return Number(state.settings.reqCbdGp || 0);
+      if (config.key === 'minicex_fm' || config.key === 'eval360_fm' || config.key === 'cbd_fm') return familyBasisRequiredForKey(config.key);
       return Number(config.required || 0);
     }
 
     function requiredHtml(config) {
       const req = requiredValue(config);
       const idx = Math.min(Number(state.chips[config.key] || 0), req);
+      if (req === 0 && config.fm) return '';
       if (req === 0) return `<span class="na-text-only">対象外</span>`;
       const done = idx >= req;
       const label = idx === 0 ? '未着手' : `${idx}/${req}済`;
@@ -1502,15 +1811,16 @@
     function metaText(config) {
       if (config.meta) return config.meta;
       if (config.type === 'counter' && config.totalByYear) return `${trainingYearFromTimeline() === '2024' ? '2024年度以前' : '2025年度以降'}:${counterTotal(config)} ／ ${config.system}`;
-      if (config.type === 'required') return `必要${requiredValue(config)} ／ ${config.system}`;
+      if (config.type === 'required' && config.fm) return `${familyBasisIntervalText(config.key)}、研修全体の目安${requiredValue(config)} ／ ${config.system}`;
+      if (config.type === 'required') return `研修全体の目安${requiredValue(config)} ／ ${config.system}`;
       return config.system || '';
     }
 
     function cellHtml(item, side, section) {
       const config = item[side];
       const cellClass = side === 'gp' ? 'gp-cell' : 'fm-cell';
-      if (side === 'fm' && !hasFamilyTraining()) return `<td class="${cellClass}"><span class="na-text-only">対象外</span></td>`;
-      if (!config || config.type === 'na') return `<td class="${cellClass}"><span class="na-text-only">対象外</span></td>`;
+      if (side === 'fm' && !hasFamilyTraining()) return `<td class="${cellClass}"></td>`;
+      if (!config || config.type === 'na') return `<td class="${cellClass}">${side === 'fm' ? '' : '<span class="na-text-only">対象外</span>'}</td>`;
       let body = '';
       if (config.type === 'counter') body = counterHtml(config);
       if (config.type === 'chip') body = chipHtml(config.key, config.set);
@@ -1523,15 +1833,12 @@
 
     function renderProgressTable() {
       ensureStateDefaults();
+      renderFamilyBasisSettingNote();
       const tbody = document.getElementById('progress-table-body');
-      const openStates = {};
-      tbody.querySelectorAll('[data-progress-section]').forEach(details => {
-        openStates[details.dataset.progressSection] = details.open;
-      });
       tbody.innerHTML = sections.map(section => {
+        const header = `<tr class="section-row"><td>${section.label}</td><td></td><td></td></tr>`;
         const rows = section.items.map(item => `<tr><td class="category-cell ${section.accent}"><div class="row-title"><strong>${item.title}</strong></div></td>${cellHtml(item, 'gp', section)}${cellHtml(item, 'fm', section)}</tr>`).join('');
-        const openAttr = openStates[section.id] === false ? '' : ' open';
-        return `<tr class="progress-section-row"><td colspan="3"><details${openAttr} data-progress-section="${section.id}"><summary>${section.label}</summary><table><colgroup><col style="width:54px;"><col><col></colgroup><tbody>${rows}</tbody></table></details></td></tr>`;
+        return `${header}${rows}`;
       }).join('');
     }
 
@@ -1551,11 +1858,11 @@
         { section:'J-OSLER/研修評価' },
         ['症例登録', `${caseTotal}症例`, 'case_gp', '', '', 'category-accent-josler'],
         ['病歴要約', `${summaryTotal}症例`, 'summary_gp', '', '', 'category-accent-josler'],
-        ['技術技能評価', '6ヶ月に1回（内科中）', 'skill_gp', '', '', 'category-accent-josler'],
-        ['研修評価：自己評価', '6ヶ月に1回（内科中）', 'self_gp', '', '', 'category-accent-josler'],
-        ['研修評価：指導医評価', '6ヶ月に1回（内科中）', 'supervisor_gp', '', '', 'category-accent-josler'],
+        ['技術技能評価', '6か月に1回（内科中）', 'skill_gp', '', '', 'category-accent-josler'],
+        ['研修評価：自己評価', '6か月に1回（内科中）', 'self_gp', '', '', 'category-accent-josler'],
+        ['研修評価：指導医評価', '6か月に1回（内科中）', 'supervisor_gp', '', '', 'category-accent-josler'],
         ['研修評価：プログラム評価', '1年に1回（内科中）', 'program_gp', '', '', 'category-accent-josler'],
-        ['多職種評価', '6ヶ月に1回（内科中）', 'multi_gp', '', '', 'category-accent-josler'],
+        ['多職種評価', '6か月に1回（内科中）', 'multi_gp', '', '', 'category-accent-josler'],
         { section:'共通項目' },
         ['ポートフォリオ', '7例', 'portfolio_gp', '16例', 'portfolio_fm', 'category-accent-common'],
         ['研究', '学会1 or 論文1', 'research_gp', '学会2 or 論文1 or 著書1', 'research_fm', 'category-accent-common'],
@@ -1564,12 +1871,12 @@
         ['定期的な振り返り', '定期的', 'regular_gp', '', 'regular_fm', 'category-accent-common'],
         ['1年毎の振り返り', '1年毎', 'annual_gp', '1年毎', 'annual_fm', 'category-accent-common'],
         { section:'業務基盤型評価' },
-        ['Mini-CEX', '定期的', 'minicex_gp', '6ヶ月毎', 'minicex_fm', 'category-accent-basis'],
-        ['360度評価', '定期的', '360_gp', '6ヶ月毎', '360_fm', 'category-accent-basis'],
-        ['CbD', '定期的', 'cbd_gp', '3ヶ月毎', 'cbd_fm', 'category-accent-basis'],
+        ['Mini-CEX', '研修全体の目安', 'minicex_gp', '6か月ごと', 'minicex_fm', 'category-accent-basis'],
+        ['360度評価', '研修全体の目安', '360_gp', '6か月ごと', '360_fm', 'category-accent-basis'],
+        ['CbD', '研修全体の目安', 'cbd_gp', '3か月ごと', 'cbd_fm', 'category-accent-basis'],
         { section:'その他' },
-        ['小児科研修', '3ヶ月', 'peds_gp', '', '', 'category-accent-other'],
-        ['救急科研修', '3ヶ月', 'em_gp', '', '', 'category-accent-other']
+        ['小児科研修', '3か月', 'peds_gp', '', '', 'category-accent-other'],
+        ['救急科研修', '3か月', 'em_gp', '', '', 'category-accent-other']
       ];
       tbody.innerHTML = rows.map(row => {
         if (!Array.isArray(row)) return `<tr class="section-row"><td class="category-cell">${row.section}</td><td class="gp-cell"></td><td class="fm-cell"></td></tr>`;
@@ -1696,19 +2003,23 @@
 
     function graph3(id, title, c, variant = 'gp') {
       const el = document.getElementById(id);
-      el.className = `memo-box summary-card ${variant === 'fm' ? 'summary-card-fm' : 'summary-card-gp'}`;
+      const complete = Number(c.total || 0) > 0 && Number(c.todo || 0) === 0 && Number(c.mid || 0) === 0 && Number(c.done || 0) >= Number(c.total || 0);
+      el.className = `memo-box summary-card ${variant === 'fm' ? 'summary-card-fm' : 'summary-card-gp'}${complete ? ' summary-card-complete' : ''}`;
       const midText = Number(c.mid || 0) > 0 ? `<span class="metric-alert">途中 ${c.mid}</span>` : `途中 ${c.mid}`;
       const todoText = Number(c.todo || 0) > 0 ? `<span class="metric-alert">未 ${c.todo}</span>` : `未 ${c.todo}`;
-      el.innerHTML = `<div class="summary-card-title">${title}</div><div class="counter-bar" style="--done:${Math.max(c.done, .01)}fr; --mid:${Math.max(c.mid, .01)}fr; --todo:${Math.max(c.todo, .01)}fr; height:10px; margin-top:6px;"><span></span><span></span><span></span></div><div class="metric-line" style="margin-top:8px;">済 ${c.done} / ${midText} / ${todoText} / 全 ${c.total}</div>`;
+      const stamp = complete ? '<span class="completion-stamp" aria-label="完了">完</span>' : '';
+      el.innerHTML = `${stamp}<div class="summary-card-title">${title}</div><div class="counter-bar" style="--done:${Math.max(c.done, .01)}fr; --mid:${Math.max(c.mid, .01)}fr; --todo:${Math.max(c.todo, .01)}fr; height:10px; margin-top:6px;"><span></span><span></span><span></span></div><div class="metric-line" style="margin-top:8px;">済 ${c.done} / ${midText} / ${todoText} / 全 ${c.total}</div>`;
     }
 
     function graph2(id, title, done, total, note, variant = 'gp') {
       const remain = Math.max(total - done, 0);
       const donePct = total ? Math.max(0, Math.min(100, done / total * 100)) : 0;
       const el = document.getElementById(id);
-      el.className = `memo-box summary-card ${variant === 'fm' ? 'summary-card-fm' : 'summary-card-gp'}`;
+      const complete = Number(total || 0) > 0 && remain === 0;
+      el.className = `memo-box summary-card ${variant === 'fm' ? 'summary-card-fm' : 'summary-card-gp'}${complete ? ' summary-card-complete' : ''}`;
       const remainText = remain ? `<span class="metric-alert">未 ${remain}</span>` : '未 0';
-      el.innerHTML = `<div class="summary-card-title">${title}</div><div class="ratio-bar"><span class="ratio-bar-done" style="flex:${donePct};"></span><span class="ratio-bar-remain" style="flex:${Math.max(100 - donePct, remain ? 8 : 0)}; min-width:${remain ? 8 : 0}px;"></span></div><div class="metric-line" style="margin-top:8px;">${remainText} / 達成 ${done} / 全 ${total}</div>${note || ''}`;
+      const stamp = complete ? '<span class="completion-stamp" aria-label="完了">完</span>' : '';
+      el.innerHTML = `${stamp}<div class="summary-card-title">${title}</div><div class="ratio-bar"><span class="ratio-bar-done" style="flex:${donePct};"></span><span class="ratio-bar-remain" style="flex:${Math.max(100 - donePct, remain ? 8 : 0)}; min-width:${remain ? 8 : 0}px;"></span></div><div class="metric-line" style="margin-top:8px;">${remainText} / 達成 ${done} / 全 ${total}</div>${note || ''}`;
     }
 
     function graphTargetOut(id, title, variant = 'fm') {
@@ -1719,8 +2030,8 @@
 
     function doneText(done, total, label) {
       const remain = Math.max(Number(total || 0) - Number(done || 0), 0);
-      const donePart = remain ? `<span class="metric-alert">${done}</span>` : done;
-      return `<span class="metric-line">${label} ${donePart}/${total}</span>`;
+      const text = `${label} ${done}/${total}`;
+      return `<span class="metric-line">${remain ? `<span class="metric-alert">${text}</span>` : text}</span>`;
     }
 
     function chipDone(key, setName) {
@@ -1754,6 +2065,8 @@
       graph3('summary-portfolio-gp', '総合診療ポートフォリオ', c.portfolio_gp);
       if (fmActive) graph3('summary-portfolio-fm', '家庭医療ポートフォリオ', c.portfolio_fm, 'fm');
       const gpReq = Number(state.settings.reqMinicexGp) + Number(state.settings.req360Gp) + Number(state.settings.reqCbdGp);
+      const fmReq = familyBasisRequiredCounts();
+      const fmBasisReqTotal = fmReq.minicex + fmReq.eval360 + fmReq.cbd;
       const halfT = halfTotal();
       const skillDone = halfDone('skill_gp', 'gpApproval');
       const evalDone = halfDone('self_gp', 'gpInput') + halfDone('supervisor_gp', 'gpInput') + chipDone('program_gp', 'gpInput') + halfDone('multi_gp', 'gpRequest');
@@ -1784,19 +2097,19 @@
       const researchFmDone = researchSummary('research_fm', 'fm') === '2/2' || researchSummary('research_fm', 'fm') === '実施済' ? 1 : 0;
       const offjtFmDone = chipDone('offjt_fm', 'fmSimple');
       const reflectionFmDone = chipDone('regular_fm', 'fmWrite') + chipDone('annual_fm', 'fmWrite');
-      const minicexFmDone = Math.min(state.chips.minicex_fm || 0, 2);
-      const eval360FmDone = Math.min(state.chips.eval360_fm || 0, 2);
-      const cbdFmDone = Math.min(state.chips.cbd_fm || 0, 4);
+      const minicexFmDone = Math.min(state.chips.minicex_fm || 0, fmReq.minicex);
+      const eval360FmDone = Math.min(state.chips.eval360_fm || 0, fmReq.eval360);
+      const cbdFmDone = Math.min(state.chips.cbd_fm || 0, fmReq.cbd);
       const fmDone = c.portfolio_fm.done + researchFmDone + offjtFmDone + reflectionFmDone + minicexFmDone + eval360FmDone + cbdFmDone;
-      const fmTotal = c.portfolio_fm.total + 1 + 1 + 2 + 2 + 2 + 4;
+      const fmTotal = c.portfolio_fm.total + 1 + 1 + 2 + fmBasisReqTotal;
       const fmNote = `<div class="inline-metrics">
         ${doneText(c.portfolio_fm.done, c.portfolio_fm.total, 'PF')}
         ${doneText(researchFmDone, 1, '研究')}
         ${doneText(offjtFmDone, 1, 'Off-JT')}
         ${doneText(reflectionFmDone, 2, '振り返り')}
-        ${doneText(minicexFmDone, 2, 'Mini-CEX')}
-        ${doneText(eval360FmDone, 2, '360度')}
-        ${doneText(cbdFmDone, 4, 'CbD')}
+        ${doneText(minicexFmDone, fmReq.minicex, 'Mini-CEX')}
+        ${doneText(eval360FmDone, fmReq.eval360, '360度')}
+        ${doneText(cbdFmDone, fmReq.cbd, 'CbD')}
       </div>`;
       graph2('summary-overall-gp', '総合診療 主要進捗', gpDone, gpTotal, gpNote);
       if (fmActive) graph2('summary-overall-fm', '家庭医療 主要進捗', fmDone, fmTotal, fmNote, 'fm');
@@ -1827,11 +2140,13 @@
       try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
     }
 
-    function confirmHistorySave() {
+    function confirmAction(message) {
       const dialog = document.getElementById('history-save-dialog');
       if (!dialog || typeof dialog.showModal !== 'function') {
-        return Promise.resolve(window.confirm('入力欄の項目を、履歴/集計欄に保存しますか？'));
+        return Promise.resolve(window.confirm(message));
       }
+      const messageNode = document.getElementById('confirm-dialog-message');
+      if (messageNode) messageNode.textContent = message;
       return new Promise(resolve => {
         const yes = document.getElementById('history-save-yes');
         const no = document.getElementById('history-save-no');
@@ -1853,6 +2168,10 @@
         dialog.addEventListener('cancel', onCancel);
         dialog.showModal();
       });
+    }
+
+    function confirmHistorySave() {
+      return confirmAction('入力欄の項目を、履歴/集計欄に保存しますか？');
     }
 
     async function saveHistory() {
@@ -1915,6 +2234,10 @@
       if (req === 0) return pill('対象外', 'hl-na');
       const cls = done >= req ? (mode === 'fm' ? 'hl-fm-strong' : 'hl-gp-strong') : (done ? (mode === 'fm' ? 'hl-fm-soft' : 'hl-gp-soft') : 'hl-none');
       return pill(`${done}/${req}`, cls);
+    }
+
+    function historyFamilyBasisRequired(item, key) {
+      return familyBasisRequiredForKey(key, item.timeline || {});
     }
 
     function historyResearchSummary(item, key, mode) {
@@ -2001,9 +2324,9 @@
         ['定期的な振り返り', 'regular', item => historyDualLine(item, historyChipPill(item, 'regular_gp', 'gpWrite'), historyChipPill(item, 'regular_fm', 'fmWrite', 'fm'))],
         ['1年毎の振り返り', 'annual', item => historyDualLine(item, historyChipPill(item, 'annual_gp', 'gpWrite'), historyChipPill(item, 'annual_fm', 'fmWrite', 'fm'))],
         { section:'業務基盤型評価' },
-        ['Mini-CEX', 'minicex', item => historyDualLine(item, historyRequiredCompact(item, 'minicex_gp', item.settings?.reqMinicexGp || 0), historyRequiredCompact(item, 'minicex_fm', 2, 'fm'))],
-        ['360度評価', 'eval360', item => historyDualLine(item, historyRequiredCompact(item, 'eval360_gp', item.settings?.req360Gp || 0), historyRequiredCompact(item, 'eval360_fm', 2, 'fm'))],
-        ['CbD', 'cbd', item => historyDualLine(item, historyRequiredCompact(item, 'cbd_gp', item.settings?.reqCbdGp || 0), historyRequiredCompact(item, 'cbd_fm', 4, 'fm'))],
+        ['Mini-CEX', 'minicex', item => historyDualLine(item, historyRequiredCompact(item, 'minicex_gp', item.settings?.reqMinicexGp || 0), historyRequiredCompact(item, 'minicex_fm', historyFamilyBasisRequired(item, 'minicex_fm'), 'fm'))],
+        ['360度評価', 'eval360', item => historyDualLine(item, historyRequiredCompact(item, 'eval360_gp', item.settings?.req360Gp || 0), historyRequiredCompact(item, 'eval360_fm', historyFamilyBasisRequired(item, 'eval360_fm'), 'fm'))],
+        ['CbD', 'cbd', item => historyDualLine(item, historyRequiredCompact(item, 'cbd_gp', item.settings?.reqCbdGp || 0), historyRequiredCompact(item, 'cbd_fm', historyFamilyBasisRequired(item, 'cbd_fm'), 'fm'))],
         { section:'その他' },
         ['小児科研修', 'peds', item => historyChipPill(item, 'peds_gp', 'gpWrite')],
         ['救急科研修', 'em', item => historyChipPill(item, 'em_gp', 'gpWrite')]
@@ -2057,6 +2380,7 @@
       const location = currentTimelineLocation(currentDate).text;
       const reminder = buildPeriodicReminders(currentDate);
       const c = state.counters;
+      const fmReq = familyBasisRequiredCounts();
       const gpLines = [
         `症例登録：${c.case_gp.done}/${c.case_gp.total}`,
         `病歴要約：${c.summary_gp.done}/${c.summary_gp.total}`,
@@ -2073,9 +2397,9 @@
         `ポートフォリオ：${c.portfolio_fm.done}/${c.portfolio_fm.total}`,
         `研究：${researchSummary('research_fm', 'fm')}`,
         `Off-JT：${chipLabel('offjt_fm', 'fmSimple')}`,
-        `Mini-CEX：${Math.min(state.chips.minicex_fm || 0, 2)}/2`,
-        `360度評価：${Math.min(state.chips.eval360_fm || 0, 2)}/2`,
-        `CbD：${Math.min(state.chips.cbd_fm || 0, 4)}/4`,
+        `Mini-CEX：${Math.min(state.chips.minicex_fm || 0, fmReq.minicex)}/${fmReq.minicex}`,
+        `360度評価：${Math.min(state.chips.eval360_fm || 0, fmReq.eval360)}/${fmReq.eval360}`,
+        `CbD：${Math.min(state.chips.cbd_fm || 0, fmReq.cbd)}/${fmReq.cbd}`,
         `定期的な振り返り：${chipLabel('regular_fm', 'fmWrite')}`,
         `1年毎の振り返り：${chipLabel('annual_fm', 'fmWrite')}`
       ];
@@ -2199,11 +2523,17 @@
       showHelp(help.dataset.help);
     });
 
-    document.addEventListener('change', event => {
+    document.addEventListener('change', async event => {
       const checkbox = event.target.closest('.reminder-check');
       if (!checkbox) return;
+      if (!checkbox.checked) return;
+      const confirmed = await confirmAction('このタスクを完了しますか？');
+      if (!confirmed) {
+        checkbox.checked = false;
+        return;
+      }
       state.initialTasks = { startNotice:false, systemFee:false, ...(state.initialTasks || {}) };
-      state.initialTasks[checkbox.dataset.initialTask] = checkbox.checked;
+      state.initialTasks[checkbox.dataset.initialTask] = true;
       renderPeriodicReminders();
       saveState();
     });
