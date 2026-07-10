@@ -1871,9 +1871,9 @@
         ['定期的な振り返り', '定期的', 'regular_gp', '', 'regular_fm', 'category-accent-common'],
         ['1年毎の振り返り', '1年毎', 'annual_gp', '1年毎', 'annual_fm', 'category-accent-common'],
         { section:'業務基盤型評価' },
-        ['Mini-CEX', '研修全体の目安', 'minicex_gp', '6か月ごと', 'minicex_fm', 'category-accent-basis'],
-        ['360度評価', '研修全体の目安', '360_gp', '6か月ごと', '360_fm', 'category-accent-basis'],
-        ['CbD', '研修全体の目安', 'cbd_gp', '3か月ごと', 'cbd_fm', 'category-accent-basis'],
+        ['Mini-CEX', 'プログラムによる', 'minicex_gp', '6か月ごと', 'minicex_fm', 'category-accent-basis'],
+        ['360度評価', 'プログラムによる', '360_gp', '6か月ごと', '360_fm', 'category-accent-basis'],
+        ['CbD', 'プログラムによる', 'cbd_gp', '3か月ごと', 'cbd_fm', 'category-accent-basis'],
         { section:'その他' },
         ['小児科研修', '3か月', 'peds_gp', '', '', 'category-accent-other'],
         ['救急科研修', '3か月', 'em_gp', '', '', 'category-accent-other']
@@ -2241,14 +2241,14 @@
     }
 
     function historyResearchSummary(item, key, mode) {
-      const route = item.settings?.[mode === 'gp' ? 'researchGpRoute' : 'researchFmRoute'];
+      const route = item.settings?.[mode === 'gp' ? 'researchGpRoute' : 'researchFmRoute'] || '学会発表';
       const value = historyChipIndex(item, key);
       if (mode === 'fm' && route === '学会発表') {
         const cls = value >= 3 ? 'hl-fm-strong' : (value ? 'hl-fm-soft' : 'hl-none');
-        return pill(`${Math.min(value, 2)}/2`, cls);
+        return `${escapeHtml(route)} ${pill(`${Math.min(value, 2)}/2`, cls)}`;
       }
       const setName = mode === 'gp' ? 'gpSimple' : 'fmSimple';
-      return historyChipPill(item, key, setName, mode);
+      return `${escapeHtml(route)} ${historyChipPill(item, key, setName, mode)}`;
     }
 
     function historyMultiChip(item, key, labels, mode = 'gp') {
@@ -2361,6 +2361,11 @@
       return chipLabel(key, mode === 'gp' ? 'gpSimple' : 'fmSimple');
     }
 
+    function researchSummaryWithRoute(key, mode) {
+      const route = state.settings[mode === 'gp' ? 'researchGpRoute' : 'researchFmRoute'] || '学会発表';
+      return `${route}：${researchSummary(key, mode)}`;
+    }
+
     function hasFamilyTrainingInTimeline(timeline = state.timeline) {
       return Array.isArray(timeline?.cells) && timeline.cells.some((value, index) => {
         const cell = normalizeTimelineCell(value, index);
@@ -2385,7 +2390,7 @@
         `症例登録：${c.case_gp.done}/${c.case_gp.total}`,
         `病歴要約：${c.summary_gp.done}/${c.summary_gp.total}`,
         `ポートフォリオ：${c.portfolio_gp.done}/${c.portfolio_gp.total}`,
-        `研究：${researchSummary('research_gp', 'gp')}`,
+        `研究：${researchSummaryWithRoute('research_gp', 'gp')}`,
         `Off-JT：${multiChipCount('offjt_gp', ['倫理','安全','感染'])}/3`,
         `Mini-CEX：${Math.min(state.chips.minicex_gp || 0, Number(state.settings.reqMinicexGp || 0))}/${state.settings.reqMinicexGp || 0}`,
         `360度評価：${Math.min(state.chips.eval360_gp || 0, Number(state.settings.req360Gp || 0))}/${state.settings.req360Gp || 0}`,
@@ -2395,7 +2400,7 @@
       ];
       const fmLines = [
         `ポートフォリオ：${c.portfolio_fm.done}/${c.portfolio_fm.total}`,
-        `研究：${researchSummary('research_fm', 'fm')}`,
+        `研究：${researchSummaryWithRoute('research_fm', 'fm')}`,
         `Off-JT：${chipLabel('offjt_fm', 'fmSimple')}`,
         `Mini-CEX：${Math.min(state.chips.minicex_fm || 0, fmReq.minicex)}/${fmReq.minicex}`,
         `360度評価：${Math.min(state.chips.eval360_fm || 0, fmReq.eval360)}/${fmReq.eval360}`,
