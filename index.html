@@ -16,7 +16,7 @@
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <title>総合診療・家庭医療 進捗管理アプリ v1.0.0</title>
+  <title>総合診療・家庭医療 進捗管理アプリ v1.0.1</title>
   <style>
     :root {
       --bg:#f5f7fb; --card:#ffffff; --line:#d8dee9; --line-strong:#c8d1dc; --text:#1f2937; --muted:#6b7280;
@@ -312,11 +312,12 @@
       <div>
         <h1>総合診療・家庭医療 専攻医 進捗管理アプリ</h1>
         <div class="app-meta">
-          <div>v1.0.0 ｜ 公開日 2026-07-11 ｜ 最終更新日 2026-07-11</div>
+          <div>v1.0.1 ｜ 公開日 2026-07-11 ｜ 最終更新日 2026-07-13</div>
           <details class="usage-overview">
             <summary>このアプリ（個人制作・非公式）について</summary>
             <div class="usage-body usage-indent">
-              このアプリは、総合診療・家庭医療専門研修の進捗管理を補助する目的で作成された、個人制作の非公式アプリです。制度更新のタイムラグやミスの可能性もありますので、各自で公式情報を確認することをおすすめします。
+              <div>このアプリは、総合診療・家庭医療専門研修の進捗管理を補助する目的で作成された、個人制作の非公式アプリです。制度更新のタイムラグやミスの可能性もありますので、各自で公式情報を確認することをおすすめします。</div>
+              <div>変更履歴はアプリの詳細な説明（note）に記載しています。</div>
             </div>
           </details>
           <details class="usage-overview">
@@ -1067,8 +1068,7 @@
     }
 
     function timelineAllowsFmIndex(index) {
-      const yearIdx = Math.floor(Number(index) / 12);
-      return yearIdx === 2 || yearIdx === 3;
+      return true;
     }
 
     function normalizeTimelineCell(cell, index) {
@@ -1242,7 +1242,7 @@
         { label:'救急', value:`${counts['救急']}か月 / 3か月`, required:3, count:counts['救急'] },
         { label:'選択', value:`${counts['選択']}か月`, required:0, count:counts['選択'] },
         { label:'家庭医療（<a class="timeline-link" href="https://shin-kateiiryo.primary-care.or.jp/strategy" target="_blank" rel="noopener noreferrer">リンク</a>）', value:fmActive ? `${fmTotal}か月 / 24か月` : '対象外', required:fmActive ? 24 : 0, count:fmTotal, major:true, fm:true },
-        { label:'家庭医療Ⅰ<span class="timeline-label-note">診療所、小病院</span>', value:fmActive ? `${fmCounts['家庭医療I']}か月 / 18か月` : '対象外', required:fmActive ? 18 : 0, count:fmCounts['家庭医療I'], fm:true },
+        { label:'家庭医療Ⅰ<span class="timeline-label-note">診療所、小病院</span>', value:fmActive ? `${fmCounts['家庭医療I']}か月 / 12か月` : '対象外', required:fmActive ? 12 : 0, count:fmCounts['家庭医療I'], fm:true },
         { label:'家庭医療Ⅱ<span class="timeline-label-note">病院中心</span>', value:fmActive ? `${fmCounts['家庭医療II']}か月 / 6か月` : '対象外', required:fmActive ? 6 : 0, count:fmCounts['家庭医療II'], fm:true },
         { label:'未定', value:`${counts['未定']}か月`, required:0, count:counts['未定'], undecided:true }
       ];
